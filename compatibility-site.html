@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do we want the same life? · Saptapadi Compatibility</title>
+<meta name="description" content="Twenty-two questions on home, family, money, faith and children. Both of you answer, and you get a shared report with the non-negotiables flagged.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&family=Hind:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#F6EFE2; --surface:#FFFDF8; --soft:#EFE4D2; --ink:#2A1A14; --muted:#5E4E45; --line:#E2D3BE;
+  --kumkum:#7A1F2B; --on-kumkum:#fff; --turmeric:#C8891B; --turmeric-ink:#7A520A; --turmeric-soft:#FBF0DC;
+  --leaf:#2F6B3F; --leaf-soft:#E7F1E9; --warn:#A33A2B; --warn-soft:#FBE9E6;
+  --display:'Tiro Devanagari Sanskrit',Georgia,serif; --body:'Hind','Noto Sans',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --ground:#1B1411; --surface:#251C18; --soft:#33271F; --ink:#F3E9DC; --muted:#C2B2A3; --line:#43352D;
+  --kumkum:#B2404E; --turmeric:#E0A53C; --turmeric-ink:#E7B75C; --turmeric-soft:#3A2C17;
+  --leaf:#86C997; --leaf-soft:#1F3325; --warn:#F09A8C; --warn-soft:#3B2220;
+}}
+:root[data-theme=dark]{
+  --ground:#1B1411; --surface:#251C18; --soft:#33271F; --ink:#F3E9DC; --muted:#C2B2A3; --line:#43352D;
+  --kumkum:#B2404E; --turmeric:#E0A53C; --turmeric-ink:#E7B75C; --turmeric-soft:#3A2C17;
+  --leaf:#86C997; --leaf-soft:#1F3325; --warn:#F09A8C; --warn-soft:#3B2220;
+}
+*{box-sizing:border-box}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.15;margin:0}
+p{margin:0}
+a{color:var(--kumkum)}
+:focus-visible{outline:3px solid var(--turmeric);outline-offset:2px;border-radius:6px}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 22px;
+  border-radius:12px;border:1.5px solid var(--kumkum);background:var(--kumkum);color:var(--on-kumkum);
+  font-weight:600;text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--kumkum);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--kumkum)}
+.btn.sm{min-height:42px;padding:0 16px;font-size:15px}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+header.top{border-bottom:1px solid var(--line);position:sticky;top:0;background:color-mix(in srgb,var(--ground) 92%,transparent);backdrop-filter:blur(8px);z-index:5}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:62px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:21px;text-decoration:none;color:var(--ink)}
+header .spacer{margin-left:auto}
+[data-view]{display:none}
+[data-view].on{display:block}
+
+/* intro */
+.hero{padding:48px 0 28px;text-align:center}
+.hero .sans{font-family:var(--display);font-size:19px;color:var(--turmeric-ink)}
+.hero h1{font-size:clamp(34px,6vw,52px);margin:10px 0 14px}
+.hero p{font-size:18px;color:var(--muted);max-width:34em;margin:0 auto}
+.modes{display:grid;gap:14px;margin:22px 0}
+.setup{display:grid;gap:14px;margin-top:28px;padding:18px;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-align:left}
+.pickrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pl{font-size:14px;font-weight:600;min-width:132px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{min-height:42px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--ground);font-size:14px;font-weight:600}
+.pill[aria-checked=true]{background:var(--kumkum);color:var(--on-kumkum);border-color:var(--kumkum)}
+.mode{display:flex;gap:16px;align-items:flex-start;text-align:left;width:100%;padding:18px;border-radius:16px;
+  border:1.5px solid var(--line);background:var(--surface)}
+.mode:hover{border-color:var(--kumkum)}
+.mode .n{flex-shrink:0;width:40px;height:40px;border-radius:50%;border:2px solid var(--turmeric);
+  display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:19px;color:var(--turmeric-ink)}
+.mode b{display:block;font-size:17px}
+.covers{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
+.chip{padding:4px 12px;border-radius:999px;background:var(--soft);font-size:13px}
+
+/* quiz */
+.quizhead{padding:20px 0 10px}
+.bar{height:8px;border-radius:4px;background:var(--soft);overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--kumkum);border-radius:4px;transition:width .3s}
+.who{display:inline-block;padding:3px 12px;border-radius:999px;background:var(--turmeric-soft);
+  color:var(--turmeric-ink);font-weight:600;font-size:13px}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;margin:14px 0}
+.qcard h2{font-size:clamp(22px,3.4vw,27px);margin-bottom:6px}
+.opts{display:grid;gap:10px;margin:18px 0}
+.opt{display:flex;gap:13px;align-items:center;width:100%;text-align:left;padding:14px 16px;border-radius:12px;
+  border:1.5px solid var(--line);background:var(--ground);min-height:56px}
+.opt:hover{border-color:var(--kumkum)}
+.opt[aria-checked=true]{border-color:var(--kumkum);background:color-mix(in srgb,var(--kumkum) 10%,var(--surface))}
+.dot{flex-shrink:0;width:22px;height:22px;border-radius:50%;border:2px solid var(--muted)}
+.opt[aria-checked=true] .dot{border-color:var(--kumkum);border-width:7px}
+.nn{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;border:1.5px dashed var(--line);background:var(--ground)}
+.nn[aria-pressed=true]{border-style:solid;border-color:var(--warn);background:var(--warn-soft)}
+.nn .box{flex-shrink:0;width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);margin-top:2px;
+  display:flex;align-items:center;justify-content:center}
+.nn[aria-pressed=true] .box{background:var(--warn);border-color:var(--warn)}
+.nav{display:flex;gap:10px;justify-content:space-between;padding-bottom:40px}
+
+/* handoff */
+.handoff{text-align:center;padding:48px 0}
+.handoff h1{font-size:clamp(28px,5vw,40px);margin-bottom:12px}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;word-break:break-all;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px;padding:14px;margin:18px 0;text-align:left}
+
+/* report */
+.report{padding:28px 0 60px}
+.ringrow{display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
+.ring{position:relative;width:150px;height:150px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .mid b{font-family:var(--display);font-size:42px;line-height:1}
+.band{display:inline-block;padding:4px 14px;border-radius:999px;font-weight:600;font-size:14px}
+.band.strong{background:var(--leaf-soft);color:var(--leaf)}
+.band.workable{background:var(--turmeric-soft);color:var(--turmeric-ink)}
+.band.stretch{background:var(--turmeric-soft);color:var(--turmeric-ink)}
+.band.difficult{background:var(--warn-soft);color:var(--warn)}
+section.block{margin:28px 0}
+section.block h2{font-size:26px;margin-bottom:6px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:10px}
+.item.bad{border-left:5px solid var(--warn)}
+.item.mid{border-left:5px solid var(--turmeric)}
+.item.good{border-left:5px solid var(--leaf)}
+.item h3{font-family:var(--body);font-weight:700;font-size:16px;margin-bottom:8px}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+@media (max-width:560px){.sides{grid-template-columns:1fr}}
+.side{padding:10px 12px;border-radius:10px;background:var(--ground);font-size:14px}
+.side span{display:block;font-size:12px;color:var(--muted)}
+.catrow{display:flex;align-items:center;gap:12px;margin-top:10px}
+.catrow .nm{width:140px;font-size:14px;flex-shrink:0}
+.catrow .tr{flex:1;height:10px;border-radius:5px;background:var(--soft);overflow:hidden}
+.catrow .tr i{display:block;height:100%;border-radius:5px}
+.catrow .vl{width:44px;text-align:right;font-size:14px;color:var(--muted)}
+@media (max-width:560px){.catrow .nm{width:100px}}
+ol.talk{padding-left:22px;display:grid;gap:8px;margin:10px 0 0}
+.note{padding:16px;border-radius:14px;background:var(--turmeric-soft);color:var(--turmeric-ink);font-size:15px}
+footer{border-top:1px solid var(--line);padding:28px 0;font-size:14px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--ground);
+  padding:12px 20px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#">
+    <svg width="26" height="26" viewBox="0 0 72 72" fill="none" stroke="var(--kumkum)" stroke-width="3" aria-hidden="true">
+      <circle cx="36" cy="36" r="32"/><path d="M36 14C45 27 45 45 36 58 27 45 27 27 36 14Z"/><path d="M14 36C27 27 45 27 58 36 45 45 27 45 14 36Z"/>
+    </svg>Saptapadi
+  </a>
+  <span class="spacer"></span>
+  <button class="btn ghost sm" id="themeBtn" type="button">Theme</button>
+  <button class="btn ghost sm" id="restartBtn" type="button" hidden>Start over</button>
+</div></header>
+
+<main>
+<!-- INTRO -->
+<div data-view="intro" class="on"><div class="wrap">
+  <div class="hero">
+    <p class="sans">सहनौ भुनक्तु</p>
+    <h1>Do we want the same life?</h1>
+    <p>The horoscope tells you one thing. This tells you another: whether you both want the same home, the same
+       role for parents, the same thing for your children. Twenty-two questions, about seven minutes each.</p>
+    <div class="covers" id="covers"></div>
+  </div>
+
+  <div class="setup">
+    <div class="pickrow">
+      <span class="pl" id="lblRegion">Your family is from</span>
+      <div class="pills" id="regionPills" role="radiogroup" aria-labelledby="lblRegion"></div>
+    </div>
+    <div class="pickrow">
+      <span class="pl" id="lblLang">Language</span>
+      <div class="pills" id="langPills" role="radiogroup" aria-labelledby="lblLang"></div>
+    </div>
+    <p class="small muted" id="regionNote"></p>
+  </div>
+
+  <div class="modes">
+    <button class="mode" type="button" data-start="together">
+      <span class="n">1</span>
+      <span><b data-t="startTogether">Both of us, on this phone</b>
+      <span class="muted small" data-t="startTogetherHelp">One answers, hands the phone over, the other answers. Neither sees the other's answers until the end.</span></span>
+    </button>
+    <button class="mode" type="button" data-start="invite">
+      <span class="n">2</span>
+      <span><b data-t="startInvite">Answer now, send a link to them</b>
+      <span class="muted small" data-t="startInviteHelp">You answer first, then share a link. When they finish, the report opens for both of you. Nothing is stored on any server.</span></span>
+    </button>
+  </div>
+
+  <p class="small muted">Your answers stay in this browser and in the link you choose to share. There is no account
+    and no server. Marking something non-negotiable is what makes this useful, so be honest rather than agreeable.</p>
+</div></div>
+
+<!-- QUIZ -->
+<div data-view="quiz"><div class="wrap">
+  <div class="quizhead">
+    <span class="who" id="whoTag"></span>
+    <div class="bar"><i id="prog"></i></div>
+    <p class="small muted" id="counter" style="margin-top:8px"></p>
+  </div>
+  <div class="qcard">
+    <p class="small muted" id="qcat"></p>
+    <h2 id="qtext"></h2>
+    <p class="muted small" id="qhelp"></p>
+    <div class="opts" id="opts" role="radiogroup" aria-labelledby="qtext"></div>
+    <button class="nn" id="nnBtn" type="button" aria-pressed="false" hidden>
+      <span class="box" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>
+      </span>
+      <span><b>This one is non-negotiable for me</b>
+      <span class="muted small" style="display:block">Counts double, and if you disagree it is flagged as a
+      dealbreaker rather than averaged away.</span></span>
+    </button>
+  </div>
+  <div class="nav">
+    <button class="btn ghost" id="backBtn" type="button">Back</button>
+    <button class="btn" id="nextBtn" type="button">Next</button>
+  </div>
+</div></div>
+
+<!-- HANDOFF -->
+<div data-view="handoff"><div class="wrap handoff" id="handoffBody"></div></div>
+
+<!-- REPORT -->
+<div data-view="report"><div class="wrap report" id="reportBody"></div></div>
+</main>
+
+<footer><div class="wrap">
+  Part of Saptapadi, matrimony for Brahmin families, dowry-free. This is a conversation tool, not advice,
+  and no answer here decides whether a marriage will work.
+</div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------------- question bank (shared with the app: questions.json) --------------- */
+var BANK={"version":2,"categories":{"home":"Home life","family":"Family","plans":"Life plans","work":"Work and money","faith":"Faith and ritual","talk":"Communication","culture":"Raising children"},"regions":{"all":"Everywhere","north":"North and East India","south":"South India"},"questions":[{"id":"diet","cat":"home","weight":3,"allowNN":true,"type":"scale","regions":["all"],"text":"What should be cooked in your home?","help":"Your own kitchen, not what others do. There is no right answer here: fish is customary for Bengali and Maithil families, meat for Kashmiri Pandits, and vegetarian for most others.","options":["Fully vegetarian","Vegetarian, eggs allowed","Fish is cooked","Meat is cooked"]},{"id":"allium","cat":"home","weight":2,"allowNN":true,"type":"exact","regions":["all"],"text":"Onion and garlic in cooking?","options":["Avoided altogether","Avoided on fasting and festival days","Used normally"]},{"id":"living","cat":"family","weight":3,"allowNN":true,"text":"Where should the two of you live after marriage?","type":"scale","options":["In a joint family with parents","Own home, same city as parents","Own home, wherever work takes us, visiting often","Own home, fully independent"],"regions":["all"]},{"id":"newbride","cat":"family","weight":3,"allowNN":true,"type":"scale","regions":["north"],"text":"What customs would be expected of a new bride at home?","help":"Things like ghunghat, touching elders' feet, or restrictions on going out alone. Say what you actually expect, not what sounds modern.","options":["None beyond ordinary respect","Formal respect to elders, nothing restricting","Traditional customs in front of elders and guests","Full traditional customs at home"]},{"id":"relocate","cat":"plans","weight":3,"allowNN":true,"text":"How far would you move for work or family?","type":"scale","options":["I want to stay in my current city","Anywhere within the state","Anywhere in India","Open to living abroad"],"regions":["all"]},{"id":"bothwork","cat":"work","weight":3,"allowNN":true,"text":"Should both partners work after marriage?","type":"scale","options":["Both of us should work","Whoever wants to, at any stage","One of us should focus on home, at least for some years","I would prefer my partner not to work"],"regions":["all"]},{"id":"children","cat":"plans","weight":3,"allowNN":true,"text":"When would you want children?","type":"scale","options":["Within the first two years","After a few years together","I am not sure yet","I would rather not have children"],"regions":["all"]},{"id":"wedding","cat":"faith","weight":2,"allowNN":true,"text":"What kind of wedding do you want?","help":"Dowry is off the table for everyone here. This is about scale and cost.","type":"scale","options":["A simple temple or registered wedding","Modest, costs split equally between families","Traditional, each family bears its own costs","A large celebration, cost is not the main concern"],"regions":["all"]},{"id":"giftcustoms","cat":"faith","weight":3,"allowNN":true,"type":"scale","regions":["north"],"text":"What about wedding gift customs: tilak, shagun, milni, barri?","help":"Both families have signed the No-Dowry Pledge. This is about the customs that sometimes carry dowry under another name.","options":["None of them, in any form","Only token amounts, same both ways","Customary gifts, but nothing demanded or itemised","These are tradition and should be kept as the elders decide"]},{"id":"practice","cat":"faith","weight":3,"allowNN":true,"text":"How much daily religious practice do you want at home?","type":"scale","options":["Daily puja and sandhyavandanam","Puja on most days and all festivals","Festivals and special occasions","Cultural rather than ritual"],"regions":["all"]},{"id":"vrat","cat":"faith","weight":2,"allowNN":false,"type":"scale","regions":["north"],"text":"Fasts like Karva Chauth, Teej or Hartalika?","options":["Kept fully, every year","Kept, in a simple way","Only if she wants to, never expected","Not something we keep"]},{"id":"parents","cat":"family","weight":3,"allowNN":true,"text":"How should ageing parents on both sides be cared for?","type":"scale","options":["They should live with us","We should live close enough to see them daily","Regular visits and financial support","We will decide when the time comes"],"regions":["all"]},{"id":"alcohol","cat":"home","weight":2,"allowNN":true,"text":"Where do you stand on alcohol?","type":"scale","options":["Neither of us should drink at all","Not in our home, occasional social drinking is fine","Occasional drinking is fine, including at home","Regular social drinking is fine"],"regions":["all"]},{"id":"chores","cat":"home","weight":2,"allowNN":false,"text":"How should cooking and housework be divided?","type":"scale","options":["Split equally, whoever is free","Split by what each of us is better at","Mostly the wife, with help","Mostly hired help for both of us"],"regions":["all"]},{"id":"money","cat":"work","weight":2,"allowNN":true,"text":"How should money be handled?","type":"scale","options":["One fully joint account","Joint for the home, personal accounts too","Mostly separate, split the bills","One of us manages everything"],"regions":["all"]},{"id":"saving","cat":"work","weight":1,"allowNN":false,"text":"Saving or spending?","type":"scale","options":["Save hard, spend rarely","Save steadily, occasional treats","Balanced, enjoy the present too","Earn to enjoy now"],"regions":["all"]},{"id":"ambition","cat":"work","weight":1,"allowNN":false,"text":"How do you want to balance work and home?","type":"scale","options":["Career comes first for the next several years","Ambitious, but with firm boundaries","Steady job, family comes first","Work is only a means to a settled home life"],"regions":["all"]},{"id":"social","cat":"home","weight":1,"allowNN":false,"text":"What should your social life look like?","type":"scale","options":["Quiet home life, a few close people","Small circle, occasional gatherings","Frequent gatherings and relatives visiting","Always hosting, a full house"],"regions":["all"]},{"id":"festivals","cat":"faith","weight":2,"allowNN":false,"text":"How fully should festivals be kept at home?","type":"scale","options":["Every festival, in full traditional form","The main festivals, properly","A few, kept simply","Mostly as family get-togethers"],"regions":["all"]},{"id":"conflict","cat":"talk","weight":2,"allowNN":false,"text":"When you disagree, what do you do?","type":"exact","options":["Talk it through right away","Take time alone first, then talk","Let it pass, it usually settles","Ask elders to help settle it"],"regions":["all"]},{"id":"decisions","cat":"talk","weight":2,"allowNN":false,"text":"Who makes the big decisions?","type":"scale","options":["Always the two of us, together","Each of us decides in our own areas","The two of us, after consulting parents","The elders of the family"],"regions":["all"]},{"id":"privacy","cat":"family","weight":2,"allowNN":false,"text":"How much of married life should parents know?","type":"exact","options":["What is between us stays between us","We share most things with our parents","Depends on the matter"],"regions":["all"]},{"id":"contact","cat":"family","weight":1,"allowNN":false,"text":"How often should you be in touch with your parents?","type":"scale","options":["Every day","A few times a week","Weekly","Now and then"],"regions":["all"]},{"id":"language","cat":"culture","weight":2,"allowNN":false,"text":"What language should children speak at home?","type":"exact","options":["Our mother tongue only","Mother tongue and English","Mostly English","Whatever comes naturally"],"regions":["all"]},{"id":"surname","cat":"culture","weight":1,"allowNN":false,"type":"exact","regions":["all"],"text":"Should she change her surname after marriage?","options":["Yes, take the husband's","Keep her own","Use both","Entirely her choice"]},{"id":"upbringing","cat":"culture","weight":3,"allowNN":true,"text":"How should children be brought up?","type":"scale","options":["Full samskaras, shlokas and Veda learning","The main samskaras and some learning","Our values, without much ritual","Let them choose for themselves"],"regions":["all"]},{"id":"astrology","cat":"faith","weight":2,"allowNN":true,"text":"How much should astrology decide?","type":"scale","options":["It decides: no match without a good score","Very important, but not the only thing","One factor among many","Not important to me"],"regions":["all"]}]};
+var HI={"lang":"hi","bankVersion":2,"note":"Hindi strings keyed by question id and option index. Reviewed by a native speaker before launch. Option arrays must stay the same length and order as questions.json.","ui":{"title":"क्या हम एक जैसा जीवन चाहते हैं?","lead":"कुंडली एक बात बताती है। यह दूसरी बात बताता है: क्या आप दोनों एक जैसा घर, माता-पिता के लिए एक जैसी भूमिका, और अपने बच्चों के लिए एक जैसी बात चाहते हैं।","startTogether":"हम दोनों, इसी फ़ोन पर","startInvite":"अभी उत्तर दें, उन्हें लिंक भेजें","question":"प्रश्न","of":"में से","next":"आगे","back":"पीछे","finish":"पूरा करें","nonNegotiable":"यह मेरे लिए समझौते योग्य नहीं है","nonNegotiableHelp":"यह दोगुना गिना जाता है, और असहमति होने पर इसे औसत में छिपाया नहीं जाता, बल्कि अलग से दिखाया जाता है।","dealbreakers":"जहाँ बात रुक सकती है","friction":"जिन पर बात करनी चाहिए","agreements":"जहाँ आप पहले से सहमत हैं","byArea":"क्षेत्र के अनुसार","talkAbout":"एक-दूसरे से पूछने लायक पाँच बातें","copyLink":"लिंक कॉपी करें","sendWhatsApp":"व्हाट्सऐप पर भेजें","handOver":"अब फ़ोन दूसरे व्यक्ति को दें","youAnswer":"आपके उत्तर","person1":"पहला व्यक्ति","person2":"दूसरा व्यक्ति","you":"आप","they":"वे","startOver":"फिर से शुरू करें","ofHundred":"100 में से"},"bands":{"strong":"आप दोनों लगभग एक जैसा जीवन चाहते हैं","workable":"मोटे तौर पर सहमति है, कुछ असली मतभेद सुलझाने हैं","stretch":"तभी निभेगा जब दोनों पक्ष झुकने को तैयार हों","difficult":"आप दोनों अलग-अलग जीवन चाहते हैं"},"categories":{"home":"घर-गृहस्थी","family":"परिवार","plans":"जीवन की योजनाएँ","work":"काम और पैसा","faith":"धर्म और संस्कार","talk":"आपसी बातचीत","culture":"बच्चों की परवरिश"},"questions":{"diet":{"text":"आपके घर में क्या बनना चाहिए?","help":"अपनी रसोई की बात, दूसरों की नहीं। यहाँ कोई सही या ग़लत उत्तर नहीं है: बंगाली और मैथिल परिवारों में मछली परंपरा है, कश्मीरी पंडितों में माँस, और अधिकांश अन्य में शाकाहार।","options":["पूर्ण शाकाहारी","शाकाहारी, अंडा चलेगा","मछली बनती है","माँस बनता है"]},"allium":{"text":"खाने में प्याज़ और लहसुन?","options":["बिल्कुल नहीं","व्रत और त्योहार के दिनों में नहीं","सामान्य रूप से चलता है"]},"living":{"text":"विवाह के बाद आप दोनों कहाँ रहेंगे?","options":["माता-पिता के साथ संयुक्त परिवार में","अपना घर, माता-पिता के उसी शहर में","अपना घर, जहाँ काम ले जाए, आना-जाना लगा रहे","अपना घर, पूरी तरह स्वतंत्र"]},"newbride":{"text":"घर में नई बहू से किन रीति-रिवाजों की अपेक्षा होगी?","help":"जैसे घूँघट, बड़ों के पैर छूना, या अकेले बाहर जाने पर रोक। वही कहिए जो वास्तव में अपेक्षित है, वह नहीं जो आधुनिक लगे।","options":["सामान्य आदर के अलावा कुछ नहीं","बड़ों का औपचारिक आदर, कोई रोक-टोक नहीं","बड़ों और मेहमानों के सामने पारंपरिक रीति","घर में पूरी पारंपरिक रीति"]},"relocate":{"text":"काम या परिवार के लिए आप कितनी दूर जा सकते हैं?","options":["मैं अपने मौजूदा शहर में ही रहना चाहता/चाहती हूँ","राज्य के भीतर कहीं भी","भारत में कहीं भी","विदेश में रहने के लिए तैयार"]},"bothwork":{"text":"क्या विवाह के बाद दोनों को नौकरी करनी चाहिए?","options":["हम दोनों को काम करना चाहिए","जो चाहे, जब चाहे","एक को घर पर ध्यान देना चाहिए, कम से कम कुछ वर्ष","मैं चाहूँगा/चाहूँगी कि मेरा साथी काम न करे"]},"children":{"text":"आप बच्चे कब चाहेंगे?","options":["पहले दो वर्षों में","कुछ वर्ष साथ रहने के बाद","अभी तय नहीं","मैं बच्चे नहीं चाहता/चाहती"]},"wedding":{"text":"आप कैसा विवाह चाहते हैं?","help":"दहेज यहाँ सबके लिए वर्जित है। यह बात आयोजन के आकार और ख़र्च की है।","options":["सादा मंदिर या रजिस्टर विवाह","साधारण, ख़र्च दोनों परिवारों में बराबर","पारंपरिक, हर परिवार अपना ख़र्च उठाए","बड़ा आयोजन, ख़र्च मुख्य बात नहीं"]},"giftcustoms":{"text":"तिलक, शगुन, मिलनी, बरी जैसी रीतियों के बारे में क्या?","help":"दोनों परिवारों ने दहेज-विरोधी शपथ ली है। यह उन रीतियों की बात है जो कभी-कभी दूसरे नाम से दहेज बन जाती हैं।","options":["किसी भी रूप में नहीं","केवल प्रतीकात्मक, दोनों ओर बराबर","रीति के अनुसार उपहार, पर कोई माँग या सूची नहीं","ये परंपरा हैं, बड़े जैसा तय करें वैसा हो"]},"practice":{"text":"घर में रोज़ कितनी पूजा-पाठ चाहते हैं?","options":["रोज़ पूजा और संध्यावंदन","अधिकतर दिन पूजा और सभी त्योहार","त्योहार और विशेष अवसर","रीति से अधिक संस्कृति के रूप में"]},"vrat":{"text":"करवा चौथ, तीज या हरतालिका जैसे व्रत?","options":["हर वर्ष, पूरी तरह","रखे जाएँ, सादगी से","यदि वह चाहे तभी, अपेक्षा कभी नहीं","हम ये नहीं रखते"]},"parents":{"text":"दोनों ओर के बुज़ुर्ग माता-पिता की देखभाल कैसे हो?","options":["उन्हें हमारे साथ रहना चाहिए","इतने पास रहें कि रोज़ मिल सकें","नियमित मिलना और आर्थिक सहयोग","समय आने पर तय करेंगे"]},"alcohol":{"text":"शराब के बारे में आपका क्या विचार है?","options":["हम दोनों में से कोई न पिए","घर में नहीं, कभी-कभार सामाजिक रूप से ठीक है","कभी-कभार ठीक है, घर में भी","नियमित सामाजिक रूप से ठीक है"]},"chores":{"text":"खाना बनाना और घर का काम कैसे बँटे?","options":["बराबर, जो भी खाली हो","जिसे जो बेहतर आता हो","अधिकतर पत्नी, सहायता के साथ","अधिकतर काम के लिए मदद रखी जाए"]},"money":{"text":"पैसे का प्रबंध कैसे हो?","options":["एक पूरी तरह संयुक्त खाता","घर के लिए संयुक्त, निजी खाते भी","अधिकतर अलग, ख़र्च बाँट लें","एक व्यक्ति सब सँभाले"]},"saving":{"text":"बचत या ख़र्च?","options":["ख़ूब बचत, ख़र्च कम","नियमित बचत, कभी-कभी शौक","संतुलित, वर्तमान का भी आनंद","कमाना ही है तो आज जी लें"]},"ambition":{"text":"काम और घर में संतुलन कैसा हो?","options":["आने वाले कई वर्ष करियर पहले","महत्वाकांक्षी, पर सीमाएँ तय","स्थिर नौकरी, परिवार पहले","काम केवल एक बसे-बसाए घर का साधन है"]},"social":{"text":"आपका सामाजिक जीवन कैसा हो?","options":["शांत घर, कुछ क़रीबी लोग","छोटा दायरा, कभी-कभी मिलना-जुलना","बार-बार आयोजन और रिश्तेदारों का आना","हमेशा मेहमान, भरा-पूरा घर"]},"festivals":{"text":"घर में त्योहार कितने पूरे तरीक़े से मनें?","options":["हर त्योहार, पूरी पारंपरिक विधि से","मुख्य त्योहार, विधि से","कुछ ही, सादगी से","अधिकतर पारिवारिक मिलन के रूप में"]},"conflict":{"text":"मतभेद होने पर आप क्या करते हैं?","options":["उसी समय बात करके सुलझाते हैं","पहले अकेले समय लेते हैं, फिर बात","जाने देते हैं, अपने आप ठीक हो जाता है","बड़ों से कहकर सुलझवाते हैं"]},"decisions":{"text":"बड़े फ़ैसले कौन करता है?","options":["हमेशा हम दोनों, साथ मिलकर","अपने-अपने क्षेत्र में हर कोई","हम दोनों, माता-पिता से पूछकर","घर के बड़े"]},"privacy":{"text":"वैवाहिक जीवन की कितनी बातें माता-पिता को पता होनी चाहिए?","options":["जो हमारे बीच है वह हमारे बीच रहे","अधिकतर बातें माता-पिता से साझा करते हैं","बात पर निर्भर करता है"]},"contact":{"text":"अपने माता-पिता से कितनी बार बात हो?","options":["रोज़","सप्ताह में कई बार","सप्ताह में एक बार","कभी-कभार"]},"language":{"text":"बच्चे घर में कौन सी भाषा बोलें?","options":["केवल अपनी मातृभाषा","मातृभाषा और अंग्रेज़ी","अधिकतर अंग्रेज़ी","जो स्वाभाविक रूप से आए"]},"surname":{"text":"क्या विवाह के बाद उसे उपनाम बदलना चाहिए?","options":["हाँ, पति का लगाए","अपना ही रखे","दोनों इस्तेमाल करे","पूरी तरह उसकी मर्ज़ी"]},"upbringing":{"text":"बच्चों की परवरिश कैसी हो?","options":["पूरे संस्कार, श्लोक और वेद शिक्षा","मुख्य संस्कार और कुछ शिक्षा","हमारे मूल्य, बिना अधिक कर्मकांड के","वे स्वयं चुनें"]},"astrology":{"text":"ज्योतिष कितना तय करे?","options":["यही तय करे: अच्छे गुण बिना कोई रिश्ता नहीं","बहुत महत्वपूर्ण, पर एकमात्र बात नहीं","कई बातों में से एक","मेरे लिए महत्वपूर्ण नहीं"]}}};
+
+var LANG='en', REGION='north';
+function T(path, fallback){
+  if(LANG!=='hi') return fallback;
+  var cur=HI, parts=path.split('.');
+  for(var i=0;i<parts.length;i++){ if(cur==null) return fallback; cur=cur[parts[i]]; }
+  return cur==null?fallback:cur;
+}
+var CATS={};
+function setLang(l){
+  LANG=l;
+  var base = BANK.categories;
+  Object.keys(base).forEach(function(k){ CATS[k] = T('categories.'+k, base[k]); });
+}
+function qText(q){ return T('questions.'+q.id+'.text', q.text); }
+function qHelp(q){ return T('questions.'+q.id+'.help', q.help||''); }
+function qOpts(q){
+  var t = LANG==='hi' && HI.questions[q.id] ? HI.questions[q.id].options : null;
+  return (t && t.length===q.options.length) ? t : q.options;
+}
+/** Questions for the chosen region. A question tagged for one region is hidden
+ *  elsewhere, so nobody is asked about Karva Chauth in Kanchipuram. */
+function activeQuestions(){
+  return BANK.questions.filter(function(q){
+    var r=q.regions||['all'];
+    return r.indexOf('all')>=0 || r.indexOf(REGION)>=0;
+  });
+}
+var Q = [];
+setLang('en');
+
+/* ---------------- scoring (mirrors compat.ts) --------------- */
+var SCALE = [100,70,30,0];
+function lineScore(q,a,b){
+  if(q.type==='exact') return a===b?100:0;
+  return SCALE[Math.min(Math.abs(a-b), SCALE.length-1)];
+}
+function compare(A,B){
+  var lines=[];
+  Q.forEach(function(q){
+    var a=A.picks[q.id], b=B.picks[q.id];
+    if(a==null||b==null) return;
+    var nn = q.allowNN && (A.nn.indexOf(q.id)>=0 || B.nn.indexOf(q.id)>=0);
+    var sc = lineScore(q,a,b);
+    lines.push({q:q,a:a,b:b,score:sc,weight:q.weight*(nn?2:1),nn:nn,dealbreaker:nn&&sc<50});
+  });
+  var tw = lines.reduce(function(s,l){return s+l.weight},0);
+  var raw = tw ? Math.round(lines.reduce(function(s,l){return s+l.score*l.weight},0)/tw) : 0;
+  var deal = lines.filter(function(l){return l.dealbreaker});
+  var fric = lines.filter(function(l){return !l.dealbreaker && l.score<70})
+                  .sort(function(x,y){return (y.weight-x.weight)||(x.score-y.score)});
+  var agree = lines.filter(function(l){return l.score>=85}).sort(function(x,y){return y.weight-x.weight});
+  var band = deal.length>=2 ? 'difficult'
+           : deal.length===1 ? (raw>=70?'stretch':'difficult')
+           : raw>=80 ? 'strong' : raw>=65 ? 'workable' : raw>=50 ? 'stretch' : 'difficult';
+  var verdict = (LANG==='hi' ? HI.bands : {strong:'You want much the same life',
+    workable:'Broadly aligned, with real differences to settle',
+    stretch:'Workable only if both sides are ready to move',
+    difficult:'You want different lives'})[band];
+  var cats={};
+  lines.forEach(function(l){
+    var c=cats[l.q.cat]||(cats[l.q.cat]={sum:0,w:0,n:0});
+    c.sum+=l.score*l.weight; c.w+=l.weight; c.n++;
+  });
+  var byCat=Object.keys(cats).map(function(k){
+    return {cat:k,score:Math.round(cats[k].sum/cats[k].w),count:cats[k].n};
+  }).sort(function(x,y){return x.score-y.score});
+  return {score:raw,band:band,verdict:verdict,answered:lines.length,
+          dealbreakers:deal,friction:fric,agreements:agree,byCategory:byCat};
+}
+
+/* ---------------- encode / decode for the share link --------------- */
+function encode(ans){
+  var picks = BANK.questions.map(function(q){ var v=ans.picks[q.id]; return v==null?'x':String(v); }).join('');
+  var nn = BANK.questions.map(function(q){ return ans.nn.indexOf(q.id)>=0?'1':'0'; }).join('');
+  return btoa(picks+'.'+nn).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decode(s){
+  try{
+    var raw = atob(s.replace(/-/g,'+').replace(/_/g,'/'));
+    var parts = raw.split('.');
+    if(parts.length!==2 || parts[0].length!==BANK.questions.length) return null;
+    var picks={}, nn=[];
+    BANK.questions.forEach(function(q,i){
+      var c=parts[0][i];
+      if(c!=='x') picks[q.id]=parseInt(c,10);
+      if(parts[1][i]==='1') nn.push(q.id);
+    });
+    return {picks:picks,nn:nn};
+  }catch(e){ return null; }
+}
+
+/* ---------------- state --------------- */
+var S = {mode:'together', who:0, i:0, A:blank(), B:blank(), invited:null};
+function blank(){ return {picks:{}, nn:[]}; }
+function cur(){ return S.who===0 ? S.A : S.B; }
+var el=function(s){return document.querySelector(s)};
+function show(v){
+  document.querySelectorAll('[data-view]').forEach(function(n){ n.classList.toggle('on', n.dataset.view===v); });
+  el('#restartBtn').hidden = (v==='intro');
+  window.scrollTo(0,0);
+}
+function toast(m){ var t=el('#toast'); t.textContent=m; t.classList.add('on');
+  clearTimeout(toast._t); toast._t=setTimeout(function(){t.classList.remove('on')},2400); }
+
+/* persistence, so a refresh mid-quiz does not lose everything */
+function save(){ try{ S.region=REGION; S.lang=LANG; localStorage.setItem('sapt_compat', JSON.stringify(S)); }catch(e){} }
+function restore(){
+  try{ var v=JSON.parse(localStorage.getItem('sapt_compat')||'null');
+    if(v && v.A && v.B){ S=v; if(S.region) REGION=S.region; if(S.lang) LANG=S.lang;
+      setLang(LANG); Q=activeQuestions(); return true; } }catch(e){}
+  return false;
+}
+
+/* ---------------- intro --------------- */
+var REGION_LABELS={north:{en:'North or East India',hi:'उत्तर या पूर्वी भारत'},
+                   south:{en:'South or West India',hi:'दक्षिण या पश्चिम भारत'}};
+var LANG_LABELS={en:'English',hi:'हिन्दी'};
+
+function paintIntro(){
+  setLang(LANG);
+  Q = activeQuestions();
+  el('#covers').innerHTML = Object.keys(CATS).map(function(k){
+    return '<span class="chip">'+CATS[k]+'</span>'; }).join('');
+  el('#regionPills').innerHTML = ['north','south'].map(function(r){
+    return '<button class="pill" type="button" role="radio" aria-checked="'+(REGION===r)+'" data-r="'+r+'">'+
+      REGION_LABELS[r][LANG]+'</button>'; }).join('');
+  el('#langPills').innerHTML = ['en','hi'].map(function(l){
+    return '<button class="pill" type="button" role="radio" aria-checked="'+(LANG===l)+'" data-l="'+l+'">'+
+      LANG_LABELS[l]+'</button>'; }).join('');
+  el('#regionPills').querySelectorAll('.pill').forEach(function(b){
+    b.onclick=function(){ REGION=b.dataset.r; save(); paintIntro(); }; });
+  el('#langPills').querySelectorAll('.pill').forEach(function(b){
+    b.onclick=function(){ LANG=b.dataset.l; save(); paintIntro(); }; });
+
+  var n=Q.length, extra=n-BANK.questions.filter(function(q){return (q.regions||['all']).indexOf('all')>=0}).length;
+  el('#regionNote').textContent = LANG==='hi'
+    ? n+' प्रश्न, लगभग सात मिनट।'+(extra>0?' इनमें '+extra+' प्रश्न आपके क्षेत्र के रीति-रिवाजों पर हैं।':'')
+    : n+' questions, about seven minutes.'+(extra>0?' '+extra+' of them are about customs specific to your region.':'');
+
+  var ui = LANG==='hi' ? HI.ui : null;
+  if(ui){
+    el('#lblRegion').textContent='आपका परिवार कहाँ से है';
+    el('#lblLang').textContent='भाषा';
+    document.querySelector('.hero h1').textContent=ui.title;
+    document.querySelector('.hero p:not(.sans)').textContent=ui.lead;
+    el('#restartBtn').textContent=ui.startOver;
+  } else {
+    el('#lblRegion').textContent='Your family is from';
+    el('#lblLang').textContent='Language';
+    document.querySelector('.hero h1').textContent='Do we want the same life?';
+    document.querySelector('.hero p:not(.sans)').textContent='The horoscope tells you one thing. This tells you another: whether you both want the same home, the same role for parents, the same thing for your children.';
+    el('#restartBtn').textContent='Start over';
+  }
+  document.querySelectorAll('[data-t]').forEach(function(n2){
+    var v = ui ? ui[n2.dataset.t] : null;
+    if(v) n2.textContent = v;
+  });
+}
+paintIntro();
+
+document.querySelectorAll('[data-start]').forEach(function(b){
+  b.onclick=function(){
+    S.mode=b.dataset.start; S.who=0; S.i=0; S.A=blank(); S.B=blank();
+    Q=activeQuestions();
+    save(); show('quiz'); render();
+  };
+});
+el('#restartBtn').onclick=function(){
+  if(!confirm('Clear both sets of answers and start again?')) return;
+  S={mode:'together',who:0,i:0,A:blank(),B:blank(),invited:null};
+  try{localStorage.removeItem('sapt_compat');}catch(e){}
+  history.replaceState(null,'',location.pathname);
+  show('intro');
+};
+el('#themeBtn').onclick=function(){
+  var r=document.documentElement;
+  var dark = r.dataset.theme ? r.dataset.theme==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+  r.dataset.theme = dark?'light':'dark';
+};
+
+/* ---------------- quiz --------------- */
+function render(){
+  var q=Q[S.i], a=cur();
+  var ui = LANG==='hi' ? HI.ui : null;
+  var label = S.mode==='invite' ? (ui?ui.youAnswer:'Your answers')
+            : (S.who===0 ? (ui?ui.person1:'Person 1 answering') : (ui?ui.person2:'Person 2 answering'));
+  el('#whoTag').textContent = label;
+  el('#prog').style.width = ((S.i)/Q.length*100)+'%';
+  el('#counter').textContent = ui
+    ? ui.question+' '+(S.i+1)+' / '+Q.length
+    : 'Question '+(S.i+1)+' of '+Q.length;
+  el('#qcat').textContent = CATS[q.cat];
+  el('#qtext').textContent = qText(q);
+  var hp = qHelp(q);
+  var h=el('#qhelp'); h.textContent=hp; h.hidden=!hp;
+
+  el('#opts').innerHTML = qOpts(q).map(function(o,i){
+    var on = a.picks[q.id]===i;
+    return '<button class="opt" type="button" role="radio" aria-checked="'+on+'" data-i="'+i+'">'+
+           '<span class="dot" aria-hidden="true"></span><span>'+o+'</span></button>';
+  }).join('');
+  el('#opts').querySelectorAll('.opt').forEach(function(b){
+    b.onclick=function(){ a.picks[q.id]=parseInt(b.dataset.i,10); save(); render(); };
+  });
+
+  var nnb=el('#nnBtn');
+  nnb.hidden = !q.allowNN;
+  if(ui){ nnb.querySelector('b').textContent=ui.nonNegotiable;
+          nnb.querySelector('.muted').textContent=ui.nonNegotiableHelp; }
+  nnb.setAttribute('aria-pressed', String(a.nn.indexOf(q.id)>=0));
+  nnb.onclick=function(){
+    var k=a.nn.indexOf(q.id);
+    if(k>=0) a.nn.splice(k,1); else a.nn.push(q.id);
+    save(); render();
+  };
+
+  el('#backBtn').style.visibility = S.i>0 ? 'visible':'hidden';
+  el('#backBtn').textContent = ui?ui.back:'Back';
+  var nx=el('#nextBtn');
+  nx.disabled = a.picks[q.id]==null;
+  nx.textContent = S.i===Q.length-1 ? (ui?ui.finish:'Finish') : (ui?ui.next:'Next');
+}
+el('#backBtn').onclick=function(){ if(S.i>0){S.i--; save(); render();} };
+el('#nextBtn').onclick=function(){
+  if(S.i < Q.length-1){ S.i++; save(); render(); return; }
+  // finished one person's set
+  if(S.mode==='invite'){ save(); handoffInvite(); return; }
+  if(S.who===0 && !S.invited){ S.who=1; S.i=0; save(); handoffPass(); return; }
+  save(); showReport();
+};
+
+/* ---------------- handoff screens --------------- */
+function handoffPass(){
+  el('#handoffBody').innerHTML =
+    (LANG==='hi'
+      ? '<h1>'+HI.ui.handOver+'</h1>'+
+        '<p class="muted">पहला व्यक्ति पूरा कर चुका है। दूसरा व्यक्ति वही '+Q.length+' प्रश्न भरे।'+
+        ' दोनों के पूरा होने तक किसी के उत्तर नहीं दिखेंगे।</p>'+
+        '<p style="margin-top:24px"><button class="btn" id="goNext" type="button">मैं दूसरा व्यक्ति हूँ, शुरू करें</button></p>'
+      : '<h1>Now hand the phone over</h1>'+
+        '<p class="muted">Person 1 is done. Person 2 answers the same '+Q.length+' questions. Neither set of answers'+
+        ' is shown until both are finished.</p>'+
+        '<p style="margin-top:24px"><button class="btn" id="goNext" type="button">I am Person 2, start</button></p>');
+  el('#goNext').onclick=function(){ show('quiz'); render(); };
+  show('handoff');
+}
+function handoffInvite(){
+  var link = location.origin+location.pathname+'#invite='+encode(S.A);
+  el('#handoffBody').innerHTML =
+    '<h1>Send this to them</h1>'+
+    '<p class="muted">They answer the same questions on their own phone. When they finish, the report opens'+
+    ' on their screen, and they can send it back to you the same way. Your answers travel inside the link,'+
+    ' not through any server.</p>'+
+    '<div class="code" id="linkBox">'+link.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'+
+      '<button class="btn" id="copyBtn" type="button">Copy link</button>'+
+      '<a class="btn ghost" id="waBtn" target="_blank" rel="noopener">Send on WhatsApp</a></div>'+
+    '<p class="small muted" style="margin-top:20px">Keep this tab open if you want to come back to it.</p>';
+  el('#waBtn').href = 'https://wa.me/?text='+encodeURIComponent(
+    'I answered the Saptapadi compatibility questions. Answer the same ones and we both get the report: '+link);
+  el('#copyBtn').onclick=function(){
+    navigator.clipboard.writeText(link).then(function(){ toast('Link copied'); },
+      function(){ toast('Select the link above and copy it'); });
+  };
+  show('handoff');
+}
+
+/* ---------------- report --------------- */
+function pct(n){ return Math.max(2,Math.min(100,n)); }
+function barColour(n){ return n>=75?'var(--leaf)':n>=50?'var(--turmeric)':'var(--warn)'; }
+
+function showReport(){
+  var r = compare(S.A, S.B);
+  var C = 2*Math.PI*62;
+  var p1 = S.invited ? 'They' : 'Person 1', p2 = S.invited ? 'You' : 'Person 2';
+
+  var html =
+    '<div class="ringrow">'+
+      '<div class="ring"><svg width="150" height="150" viewBox="0 0 150 150" aria-hidden="true">'+
+        '<circle cx="75" cy="75" r="62" fill="none" stroke="var(--soft)" stroke-width="13"/>'+
+        '<circle cx="75" cy="75" r="62" fill="none" stroke="var(--kumkum)" stroke-width="13" stroke-linecap="round"'+
+        ' stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-r.score/100))+'"/></svg>'+
+        '<div class="mid"><b>'+r.score+'</b><span class="small muted">of 100</span></div></div>'+
+      '<div style="flex:1;min-width:220px">'+
+        '<span class="band '+r.band+'">'+r.verdict+'</span>'+
+        '<p class="muted" style="margin-top:10px">Based on '+r.answered+' questions you both answered'+
+        (r.dealbreakers.length? ', with '+r.dealbreakers.length+' non-negotiable'+(r.dealbreakers.length>1?'s':'')+' in conflict':'')+'.</p>'+
+      '</div></div>';
+
+  if(r.dealbreakers.length){
+    html += '<div class="note" style="background:var(--warn-soft);color:var(--warn)"><b>Read this part first.</b> '+
+      'A non-negotiable is not a preference to average out. Either someone changes their mind, honestly, or this '+
+      'is where the match ends. Better to know now.</div>';
+  }
+
+  function itemHTML(l, cls){
+    return '<div class="item '+cls+'"><h3>'+l.q.text+(l.nn?' <span class="band difficult" style="font-size:12px">non-negotiable</span>':'')+'</h3>'+
+      '<div class="sides">'+
+        '<div class="side"><span>'+p1+'</span>'+qOpts(l.q)[l.a]+'</div>'+
+        '<div class="side"><span>'+p2+'</span>'+qOpts(l.q)[l.b]+'</div>'+
+      '</div></div>';
+  }
+
+  if(r.dealbreakers.length){
+    html += '<section class="block"><h2>Dealbreakers</h2>'+
+      '<p class="muted small">Marked non-negotiable by one of you, and you disagree.</p>'+
+      r.dealbreakers.map(function(l){return itemHTML(l,'bad')}).join('')+'</section>';
+  }
+  if(r.friction.length){
+    html += '<section class="block"><h2>Worth talking through</h2>'+
+      '<p class="muted small">Real differences, but nobody called them non-negotiable.</p>'+
+      r.friction.slice(0,6).map(function(l){return itemHTML(l,'mid')}).join('')+'</section>';
+  }
+  if(r.agreements.length){
+    html += '<section class="block"><h2>Where you already agree</h2>'+
+      r.agreements.slice(0,5).map(function(l){return itemHTML(l,'good')}).join('')+'</section>';
+  }
+
+  html += '<section class="block"><h2>By area</h2>'+
+    r.byCategory.map(function(c){
+      return '<div class="catrow"><span class="nm">'+CATS[c.cat]+'</span>'+
+        '<span class="tr"><i style="width:'+pct(c.score)+'%;background:'+barColour(c.score)+'"></i></span>'+
+        '<span class="vl">'+c.score+'</span></div>';
+    }).join('')+'</section>';
+
+  var talk = r.dealbreakers.concat(r.friction).slice(0,5);
+  if(talk.length){
+    html += '<section class="block"><h2>Five things to ask each other</h2><ol class="talk">'+
+      talk.map(function(l){return '<li>'+qText(l.q)+'</li>'}).join('')+'</ol></section>';
+  }
+
+  html += '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:28px">'+
+    '<button class="btn" id="shareRep" type="button">Copy a link to this report</button>'+
+    '<button class="btn ghost" id="printRep" type="button">Print or save as PDF</button></div>'+
+    '<p class="small muted" style="margin-top:18px">This is a conversation starter, not a verdict. Couples who want'+
+    ' different things can still make it work when both know what they are agreeing to.</p>';
+
+  el('#reportBody').innerHTML = html;
+  el('#printRep').onclick=function(){ window.print(); };
+  el('#shareRep').onclick=function(){
+    var l = location.origin+location.pathname+'#report='+encode(S.A)+'~'+encode(S.B);
+    navigator.clipboard.writeText(l).then(function(){ toast('Report link copied'); },
+      function(){ toast('Could not copy automatically'); });
+  };
+  show('report');
+}
+
+/* ---------------- entry: plain, invited, or shared report --------------- */
+(function start(){
+  var h = location.hash.slice(1);
+  if(h.indexOf('report=')===0){
+    var two = h.slice(7).split('~');
+    var a=decode(two[0]||''), b=decode(two[1]||'');
+    if(a&&b){ S.A=a; S.B=b; S.invited=true; showReport(); return; }
+  }
+  if(h.indexOf('invite=')===0){
+    var their = decode(h.slice(7));
+    if(their){
+      S.A=their; S.B=blank(); S.who=1; S.i=0; S.mode='invite'; S.invited=true;
+      el('#handoffBody').innerHTML =
+        (LANG==='hi'
+          ? '<h1>कोई जानना चाहता है कि क्या आप एक जैसा जीवन चाहते हैं</h1>'+
+            '<p class="muted">उन्होंने घर, परिवार, पैसे, धर्म और बच्चों पर '+Q.length+' प्रश्नों के उत्तर दिए हैं।'+
+            ' वही प्रश्न आप भी भरें और दोनों को रिपोर्ट मिलेगी। आपके पूरा करने तक उनके उत्तर छिपे रहेंगे।</p>'+
+            '<p style="margin-top:24px"><button class="btn" id="goInv" type="button">शुरू करें, लगभग सात मिनट</button></p>'
+          : '<h1>Someone wants to know if you want the same life</h1>'+
+            '<p class="muted">They have answered '+Q.length+' questions about home, family, money, faith and children.'+
+            ' Answer the same ones and you both get the report. Their answers stay hidden until you finish yours.</p>'+
+            '<p style="margin-top:24px"><button class="btn" id="goInv" type="button">Start, about seven minutes</button></p>');
+      el('#goInv').onclick=function(){ show('quiz'); render(); };
+      show('handoff');
+      return;
+    }
+    toast('That link looks incomplete');
+  }
+  if(restore() && (Object.keys(S.A.picks).length || Object.keys(S.B.picks).length)){
+    show('quiz'); render(); toast('Picked up where you left off');
+    return;
+  }
+  show('intro');
+})();
+})();
+</script>
+</body>
+</html>
