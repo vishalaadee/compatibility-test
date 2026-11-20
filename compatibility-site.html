@@ -92,6 +92,19 @@ header .spacer{margin-left:auto}
   display:flex;align-items:center;justify-content:center}
 .nn[aria-pressed=true] .box{background:var(--warn);border-color:var(--warn)}
 .nav{display:flex;gap:10px;justify-content:space-between;padding-bottom:40px}
+.skip{display:block;width:100%;margin-top:4px;padding:12px;border-radius:10px;border:1px solid var(--line);
+  background:transparent;color:var(--muted);font-size:14px}
+.skip:hover{border-color:var(--muted);color:var(--ink)}
+.tierTag{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--soft);font-size:12px;
+  font-weight:600;margin-left:8px}
+.flag{padding:16px;border-radius:14px;margin-top:10px;border-left:5px solid var(--warn);
+  background:var(--warn-soft);color:var(--ink)}
+.flag.friction{border-left-color:var(--turmeric);background:var(--turmeric-soft)}
+.flag b{display:block;margin-bottom:4px;color:var(--warn)}
+.flag.friction b{color:var(--turmeric-ink)}
+.helpline{margin-top:12px;padding:14px;border-radius:12px;background:var(--surface);
+  border:1px solid var(--line);font-size:14px}
+.gateCards{display:grid;gap:12px;margin:24px 0;text-align:left}
 
 /* handoff */
 .handoff{text-align:center;padding:48px 0}
@@ -152,7 +165,6 @@ footer{border-top:1px solid var(--line);padding:28px 0;font-size:14px;color:var(
 <!-- INTRO -->
 <div data-view="intro" class="on"><div class="wrap">
   <div class="hero">
-    <p class="sans">सहनौ भुनक्तु</p>
     <h1>Do we want the same life?</h1>
     <p>The horoscope tells you one thing. This tells you another: whether you both want the same home, the same
        role for parents, the same thing for your children. Twenty-two questions, about seven minutes each.</p>
@@ -200,6 +212,7 @@ footer{border-top:1px solid var(--line);padding:28px 0;font-size:14px;color:var(
     <h2 id="qtext"></h2>
     <p class="muted small" id="qhelp"></p>
     <div class="opts" id="opts" role="radiogroup" aria-labelledby="qtext"></div>
+    <button class="skip" id="skipBtn" type="button" hidden>Prefer not to answer this one</button>
     <button class="nn" id="nnBtn" type="button" aria-pressed="false" hidden>
       <span class="box" aria-hidden="true">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>
@@ -214,6 +227,9 @@ footer{border-top:1px solid var(--line);padding:28px 0;font-size:14px;color:var(
     <button class="btn" id="nextBtn" type="button">Next</button>
   </div>
 </div></div>
+
+<!-- TIER GATE -->
+<div data-view="gate"><div class="wrap handoff" id="gateBody"></div></div>
 
 <!-- HANDOFF -->
 <div data-view="handoff"><div class="wrap handoff" id="handoffBody"></div></div>
@@ -233,10 +249,11 @@ footer{border-top:1px solid var(--line);padding:28px 0;font-size:14px;color:var(
 'use strict';
 
 /* ---------------- question bank (shared with the app: questions.json) --------------- */
-var BANK={"version":2,"categories":{"home":"Home life","family":"Family","plans":"Life plans","work":"Work and money","faith":"Faith and ritual","talk":"Communication","culture":"Raising children"},"regions":{"all":"Everywhere","north":"North and East India","south":"South India"},"questions":[{"id":"diet","cat":"home","weight":3,"allowNN":true,"type":"scale","regions":["all"],"text":"What should be cooked in your home?","help":"Your own kitchen, not what others do. There is no right answer here: fish is customary for Bengali and Maithil families, meat for Kashmiri Pandits, and vegetarian for most others.","options":["Fully vegetarian","Vegetarian, eggs allowed","Fish is cooked","Meat is cooked"]},{"id":"allium","cat":"home","weight":2,"allowNN":true,"type":"exact","regions":["all"],"text":"Onion and garlic in cooking?","options":["Avoided altogether","Avoided on fasting and festival days","Used normally"]},{"id":"living","cat":"family","weight":3,"allowNN":true,"text":"Where should the two of you live after marriage?","type":"scale","options":["In a joint family with parents","Own home, same city as parents","Own home, wherever work takes us, visiting often","Own home, fully independent"],"regions":["all"]},{"id":"newbride","cat":"family","weight":3,"allowNN":true,"type":"scale","regions":["north"],"text":"What customs would be expected of a new bride at home?","help":"Things like ghunghat, touching elders' feet, or restrictions on going out alone. Say what you actually expect, not what sounds modern.","options":["None beyond ordinary respect","Formal respect to elders, nothing restricting","Traditional customs in front of elders and guests","Full traditional customs at home"]},{"id":"relocate","cat":"plans","weight":3,"allowNN":true,"text":"How far would you move for work or family?","type":"scale","options":["I want to stay in my current city","Anywhere within the state","Anywhere in India","Open to living abroad"],"regions":["all"]},{"id":"bothwork","cat":"work","weight":3,"allowNN":true,"text":"Should both partners work after marriage?","type":"scale","options":["Both of us should work","Whoever wants to, at any stage","One of us should focus on home, at least for some years","I would prefer my partner not to work"],"regions":["all"]},{"id":"children","cat":"plans","weight":3,"allowNN":true,"text":"When would you want children?","type":"scale","options":["Within the first two years","After a few years together","I am not sure yet","I would rather not have children"],"regions":["all"]},{"id":"wedding","cat":"faith","weight":2,"allowNN":true,"text":"What kind of wedding do you want?","help":"Dowry is off the table for everyone here. This is about scale and cost.","type":"scale","options":["A simple temple or registered wedding","Modest, costs split equally between families","Traditional, each family bears its own costs","A large celebration, cost is not the main concern"],"regions":["all"]},{"id":"giftcustoms","cat":"faith","weight":3,"allowNN":true,"type":"scale","regions":["north"],"text":"What about wedding gift customs: tilak, shagun, milni, barri?","help":"Both families have signed the No-Dowry Pledge. This is about the customs that sometimes carry dowry under another name.","options":["None of them, in any form","Only token amounts, same both ways","Customary gifts, but nothing demanded or itemised","These are tradition and should be kept as the elders decide"]},{"id":"practice","cat":"faith","weight":3,"allowNN":true,"text":"How much daily religious practice do you want at home?","type":"scale","options":["Daily puja and sandhyavandanam","Puja on most days and all festivals","Festivals and special occasions","Cultural rather than ritual"],"regions":["all"]},{"id":"vrat","cat":"faith","weight":2,"allowNN":false,"type":"scale","regions":["north"],"text":"Fasts like Karva Chauth, Teej or Hartalika?","options":["Kept fully, every year","Kept, in a simple way","Only if she wants to, never expected","Not something we keep"]},{"id":"parents","cat":"family","weight":3,"allowNN":true,"text":"How should ageing parents on both sides be cared for?","type":"scale","options":["They should live with us","We should live close enough to see them daily","Regular visits and financial support","We will decide when the time comes"],"regions":["all"]},{"id":"alcohol","cat":"home","weight":2,"allowNN":true,"text":"Where do you stand on alcohol?","type":"scale","options":["Neither of us should drink at all","Not in our home, occasional social drinking is fine","Occasional drinking is fine, including at home","Regular social drinking is fine"],"regions":["all"]},{"id":"chores","cat":"home","weight":2,"allowNN":false,"text":"How should cooking and housework be divided?","type":"scale","options":["Split equally, whoever is free","Split by what each of us is better at","Mostly the wife, with help","Mostly hired help for both of us"],"regions":["all"]},{"id":"money","cat":"work","weight":2,"allowNN":true,"text":"How should money be handled?","type":"scale","options":["One fully joint account","Joint for the home, personal accounts too","Mostly separate, split the bills","One of us manages everything"],"regions":["all"]},{"id":"saving","cat":"work","weight":1,"allowNN":false,"text":"Saving or spending?","type":"scale","options":["Save hard, spend rarely","Save steadily, occasional treats","Balanced, enjoy the present too","Earn to enjoy now"],"regions":["all"]},{"id":"ambition","cat":"work","weight":1,"allowNN":false,"text":"How do you want to balance work and home?","type":"scale","options":["Career comes first for the next several years","Ambitious, but with firm boundaries","Steady job, family comes first","Work is only a means to a settled home life"],"regions":["all"]},{"id":"social","cat":"home","weight":1,"allowNN":false,"text":"What should your social life look like?","type":"scale","options":["Quiet home life, a few close people","Small circle, occasional gatherings","Frequent gatherings and relatives visiting","Always hosting, a full house"],"regions":["all"]},{"id":"festivals","cat":"faith","weight":2,"allowNN":false,"text":"How fully should festivals be kept at home?","type":"scale","options":["Every festival, in full traditional form","The main festivals, properly","A few, kept simply","Mostly as family get-togethers"],"regions":["all"]},{"id":"conflict","cat":"talk","weight":2,"allowNN":false,"text":"When you disagree, what do you do?","type":"exact","options":["Talk it through right away","Take time alone first, then talk","Let it pass, it usually settles","Ask elders to help settle it"],"regions":["all"]},{"id":"decisions","cat":"talk","weight":2,"allowNN":false,"text":"Who makes the big decisions?","type":"scale","options":["Always the two of us, together","Each of us decides in our own areas","The two of us, after consulting parents","The elders of the family"],"regions":["all"]},{"id":"privacy","cat":"family","weight":2,"allowNN":false,"text":"How much of married life should parents know?","type":"exact","options":["What is between us stays between us","We share most things with our parents","Depends on the matter"],"regions":["all"]},{"id":"contact","cat":"family","weight":1,"allowNN":false,"text":"How often should you be in touch with your parents?","type":"scale","options":["Every day","A few times a week","Weekly","Now and then"],"regions":["all"]},{"id":"language","cat":"culture","weight":2,"allowNN":false,"text":"What language should children speak at home?","type":"exact","options":["Our mother tongue only","Mother tongue and English","Mostly English","Whatever comes naturally"],"regions":["all"]},{"id":"surname","cat":"culture","weight":1,"allowNN":false,"type":"exact","regions":["all"],"text":"Should she change her surname after marriage?","options":["Yes, take the husband's","Keep her own","Use both","Entirely her choice"]},{"id":"upbringing","cat":"culture","weight":3,"allowNN":true,"text":"How should children be brought up?","type":"scale","options":["Full samskaras, shlokas and Veda learning","The main samskaras and some learning","Our values, without much ritual","Let them choose for themselves"],"regions":["all"]},{"id":"astrology","cat":"faith","weight":2,"allowNN":true,"text":"How much should astrology decide?","type":"scale","options":["It decides: no match without a good score","Very important, but not the only thing","One factor among many","Not important to me"],"regions":["all"]}]};
-var HI={"lang":"hi","bankVersion":2,"note":"Hindi strings keyed by question id and option index. Reviewed by a native speaker before launch. Option arrays must stay the same length and order as questions.json.","ui":{"title":"क्या हम एक जैसा जीवन चाहते हैं?","lead":"कुंडली एक बात बताती है। यह दूसरी बात बताता है: क्या आप दोनों एक जैसा घर, माता-पिता के लिए एक जैसी भूमिका, और अपने बच्चों के लिए एक जैसी बात चाहते हैं।","startTogether":"हम दोनों, इसी फ़ोन पर","startInvite":"अभी उत्तर दें, उन्हें लिंक भेजें","question":"प्रश्न","of":"में से","next":"आगे","back":"पीछे","finish":"पूरा करें","nonNegotiable":"यह मेरे लिए समझौते योग्य नहीं है","nonNegotiableHelp":"यह दोगुना गिना जाता है, और असहमति होने पर इसे औसत में छिपाया नहीं जाता, बल्कि अलग से दिखाया जाता है।","dealbreakers":"जहाँ बात रुक सकती है","friction":"जिन पर बात करनी चाहिए","agreements":"जहाँ आप पहले से सहमत हैं","byArea":"क्षेत्र के अनुसार","talkAbout":"एक-दूसरे से पूछने लायक पाँच बातें","copyLink":"लिंक कॉपी करें","sendWhatsApp":"व्हाट्सऐप पर भेजें","handOver":"अब फ़ोन दूसरे व्यक्ति को दें","youAnswer":"आपके उत्तर","person1":"पहला व्यक्ति","person2":"दूसरा व्यक्ति","you":"आप","they":"वे","startOver":"फिर से शुरू करें","ofHundred":"100 में से"},"bands":{"strong":"आप दोनों लगभग एक जैसा जीवन चाहते हैं","workable":"मोटे तौर पर सहमति है, कुछ असली मतभेद सुलझाने हैं","stretch":"तभी निभेगा जब दोनों पक्ष झुकने को तैयार हों","difficult":"आप दोनों अलग-अलग जीवन चाहते हैं"},"categories":{"home":"घर-गृहस्थी","family":"परिवार","plans":"जीवन की योजनाएँ","work":"काम और पैसा","faith":"धर्म और संस्कार","talk":"आपसी बातचीत","culture":"बच्चों की परवरिश"},"questions":{"diet":{"text":"आपके घर में क्या बनना चाहिए?","help":"अपनी रसोई की बात, दूसरों की नहीं। यहाँ कोई सही या ग़लत उत्तर नहीं है: बंगाली और मैथिल परिवारों में मछली परंपरा है, कश्मीरी पंडितों में माँस, और अधिकांश अन्य में शाकाहार।","options":["पूर्ण शाकाहारी","शाकाहारी, अंडा चलेगा","मछली बनती है","माँस बनता है"]},"allium":{"text":"खाने में प्याज़ और लहसुन?","options":["बिल्कुल नहीं","व्रत और त्योहार के दिनों में नहीं","सामान्य रूप से चलता है"]},"living":{"text":"विवाह के बाद आप दोनों कहाँ रहेंगे?","options":["माता-पिता के साथ संयुक्त परिवार में","अपना घर, माता-पिता के उसी शहर में","अपना घर, जहाँ काम ले जाए, आना-जाना लगा रहे","अपना घर, पूरी तरह स्वतंत्र"]},"newbride":{"text":"घर में नई बहू से किन रीति-रिवाजों की अपेक्षा होगी?","help":"जैसे घूँघट, बड़ों के पैर छूना, या अकेले बाहर जाने पर रोक। वही कहिए जो वास्तव में अपेक्षित है, वह नहीं जो आधुनिक लगे।","options":["सामान्य आदर के अलावा कुछ नहीं","बड़ों का औपचारिक आदर, कोई रोक-टोक नहीं","बड़ों और मेहमानों के सामने पारंपरिक रीति","घर में पूरी पारंपरिक रीति"]},"relocate":{"text":"काम या परिवार के लिए आप कितनी दूर जा सकते हैं?","options":["मैं अपने मौजूदा शहर में ही रहना चाहता/चाहती हूँ","राज्य के भीतर कहीं भी","भारत में कहीं भी","विदेश में रहने के लिए तैयार"]},"bothwork":{"text":"क्या विवाह के बाद दोनों को नौकरी करनी चाहिए?","options":["हम दोनों को काम करना चाहिए","जो चाहे, जब चाहे","एक को घर पर ध्यान देना चाहिए, कम से कम कुछ वर्ष","मैं चाहूँगा/चाहूँगी कि मेरा साथी काम न करे"]},"children":{"text":"आप बच्चे कब चाहेंगे?","options":["पहले दो वर्षों में","कुछ वर्ष साथ रहने के बाद","अभी तय नहीं","मैं बच्चे नहीं चाहता/चाहती"]},"wedding":{"text":"आप कैसा विवाह चाहते हैं?","help":"दहेज यहाँ सबके लिए वर्जित है। यह बात आयोजन के आकार और ख़र्च की है।","options":["सादा मंदिर या रजिस्टर विवाह","साधारण, ख़र्च दोनों परिवारों में बराबर","पारंपरिक, हर परिवार अपना ख़र्च उठाए","बड़ा आयोजन, ख़र्च मुख्य बात नहीं"]},"giftcustoms":{"text":"तिलक, शगुन, मिलनी, बरी जैसी रीतियों के बारे में क्या?","help":"दोनों परिवारों ने दहेज-विरोधी शपथ ली है। यह उन रीतियों की बात है जो कभी-कभी दूसरे नाम से दहेज बन जाती हैं।","options":["किसी भी रूप में नहीं","केवल प्रतीकात्मक, दोनों ओर बराबर","रीति के अनुसार उपहार, पर कोई माँग या सूची नहीं","ये परंपरा हैं, बड़े जैसा तय करें वैसा हो"]},"practice":{"text":"घर में रोज़ कितनी पूजा-पाठ चाहते हैं?","options":["रोज़ पूजा और संध्यावंदन","अधिकतर दिन पूजा और सभी त्योहार","त्योहार और विशेष अवसर","रीति से अधिक संस्कृति के रूप में"]},"vrat":{"text":"करवा चौथ, तीज या हरतालिका जैसे व्रत?","options":["हर वर्ष, पूरी तरह","रखे जाएँ, सादगी से","यदि वह चाहे तभी, अपेक्षा कभी नहीं","हम ये नहीं रखते"]},"parents":{"text":"दोनों ओर के बुज़ुर्ग माता-पिता की देखभाल कैसे हो?","options":["उन्हें हमारे साथ रहना चाहिए","इतने पास रहें कि रोज़ मिल सकें","नियमित मिलना और आर्थिक सहयोग","समय आने पर तय करेंगे"]},"alcohol":{"text":"शराब के बारे में आपका क्या विचार है?","options":["हम दोनों में से कोई न पिए","घर में नहीं, कभी-कभार सामाजिक रूप से ठीक है","कभी-कभार ठीक है, घर में भी","नियमित सामाजिक रूप से ठीक है"]},"chores":{"text":"खाना बनाना और घर का काम कैसे बँटे?","options":["बराबर, जो भी खाली हो","जिसे जो बेहतर आता हो","अधिकतर पत्नी, सहायता के साथ","अधिकतर काम के लिए मदद रखी जाए"]},"money":{"text":"पैसे का प्रबंध कैसे हो?","options":["एक पूरी तरह संयुक्त खाता","घर के लिए संयुक्त, निजी खाते भी","अधिकतर अलग, ख़र्च बाँट लें","एक व्यक्ति सब सँभाले"]},"saving":{"text":"बचत या ख़र्च?","options":["ख़ूब बचत, ख़र्च कम","नियमित बचत, कभी-कभी शौक","संतुलित, वर्तमान का भी आनंद","कमाना ही है तो आज जी लें"]},"ambition":{"text":"काम और घर में संतुलन कैसा हो?","options":["आने वाले कई वर्ष करियर पहले","महत्वाकांक्षी, पर सीमाएँ तय","स्थिर नौकरी, परिवार पहले","काम केवल एक बसे-बसाए घर का साधन है"]},"social":{"text":"आपका सामाजिक जीवन कैसा हो?","options":["शांत घर, कुछ क़रीबी लोग","छोटा दायरा, कभी-कभी मिलना-जुलना","बार-बार आयोजन और रिश्तेदारों का आना","हमेशा मेहमान, भरा-पूरा घर"]},"festivals":{"text":"घर में त्योहार कितने पूरे तरीक़े से मनें?","options":["हर त्योहार, पूरी पारंपरिक विधि से","मुख्य त्योहार, विधि से","कुछ ही, सादगी से","अधिकतर पारिवारिक मिलन के रूप में"]},"conflict":{"text":"मतभेद होने पर आप क्या करते हैं?","options":["उसी समय बात करके सुलझाते हैं","पहले अकेले समय लेते हैं, फिर बात","जाने देते हैं, अपने आप ठीक हो जाता है","बड़ों से कहकर सुलझवाते हैं"]},"decisions":{"text":"बड़े फ़ैसले कौन करता है?","options":["हमेशा हम दोनों, साथ मिलकर","अपने-अपने क्षेत्र में हर कोई","हम दोनों, माता-पिता से पूछकर","घर के बड़े"]},"privacy":{"text":"वैवाहिक जीवन की कितनी बातें माता-पिता को पता होनी चाहिए?","options":["जो हमारे बीच है वह हमारे बीच रहे","अधिकतर बातें माता-पिता से साझा करते हैं","बात पर निर्भर करता है"]},"contact":{"text":"अपने माता-पिता से कितनी बार बात हो?","options":["रोज़","सप्ताह में कई बार","सप्ताह में एक बार","कभी-कभार"]},"language":{"text":"बच्चे घर में कौन सी भाषा बोलें?","options":["केवल अपनी मातृभाषा","मातृभाषा और अंग्रेज़ी","अधिकतर अंग्रेज़ी","जो स्वाभाविक रूप से आए"]},"surname":{"text":"क्या विवाह के बाद उसे उपनाम बदलना चाहिए?","options":["हाँ, पति का लगाए","अपना ही रखे","दोनों इस्तेमाल करे","पूरी तरह उसकी मर्ज़ी"]},"upbringing":{"text":"बच्चों की परवरिश कैसी हो?","options":["पूरे संस्कार, श्लोक और वेद शिक्षा","मुख्य संस्कार और कुछ शिक्षा","हमारे मूल्य, बिना अधिक कर्मकांड के","वे स्वयं चुनें"]},"astrology":{"text":"ज्योतिष कितना तय करे?","options":["यही तय करे: अच्छे गुण बिना कोई रिश्ता नहीं","बहुत महत्वपूर्ण, पर एकमात्र बात नहीं","कई बातों में से एक","मेरे लिए महत्वपूर्ण नहीं"]}}};
+var BANK={"version":3,"note":"Shared question bank. The standalone site, the website and the app all read this. Keep ids stable: saved answers reference them.","categories":{"home":"Home life","family":"Family","plans":"Life plans","work":"Work and money","faith":"Faith and ritual","talk":"Communication","culture":"Raising children","inlaws":"In-laws and extended family","temperament":"Temperament","roles":"Roles and equality","health":"Health and wellbeing","self":"Interests and time"},"questions":[{"id":"diet","cat":"home","weight":3,"allowNN":true,"type":"scale","regions":["all"],"text":"What should be cooked in your home?","help":"Your own kitchen, not what others do. There is no right answer here: fish is customary for Bengali and Maithil families, meat for Kashmiri Pandits, and vegetarian for most others.","options":["Fully vegetarian","Vegetarian, eggs allowed","Fish is cooked","Meat is cooked"],"tier":"core"},{"id":"allium","cat":"home","weight":2,"allowNN":true,"type":"exact","regions":["all"],"text":"Onion and garlic in cooking?","options":["Avoided altogether","Avoided on fasting and festival days","Used normally"],"tier":"core"},{"id":"living","cat":"family","weight":3,"allowNN":true,"text":"Where should the two of you live after marriage?","type":"scale","options":["In a joint family with parents","Own home, same city as parents","Own home, wherever work takes us, visiting often","Own home, fully independent"],"regions":["all"],"tier":"core"},{"id":"newbride","cat":"family","weight":3,"allowNN":true,"type":"scale","regions":["north"],"text":"What customs would be expected of a new bride at home?","help":"Things like ghunghat, touching elders' feet, or restrictions on going out alone. Say what you actually expect, not what sounds modern.","options":["None beyond ordinary respect","Formal respect to elders, nothing restricting","Traditional customs in front of elders and guests","Full traditional customs at home"],"tier":"core"},{"id":"relocate","cat":"plans","weight":3,"allowNN":true,"text":"How far would you move for work or family?","type":"scale","options":["I want to stay in my current city","Anywhere within the state","Anywhere in India","Open to living abroad"],"regions":["all"],"tier":"core"},{"id":"bothwork","cat":"work","weight":3,"allowNN":true,"text":"Should both partners work after marriage?","type":"scale","options":["Both of us should work","Whoever wants to, at any stage","One of us should focus on home, at least for some years","I would prefer my partner not to work"],"regions":["all"],"tier":"core"},{"id":"children","cat":"plans","weight":3,"allowNN":true,"text":"When would you want children?","type":"scale","options":["Within the first two years","After a few years together","I am not sure yet","I would rather not have children"],"regions":["all"],"tier":"core"},{"id":"kids_count","cat":"plans","weight":3,"allowNN":true,"type":"scale","tier":"core","regions":["all"],"text":"How many children would you want?","options":["One","Two","Three or more","None","Whatever happens, we will see"]},{"id":"wedding","cat":"faith","weight":2,"allowNN":true,"text":"What kind of wedding do you want?","help":"Dowry is off the table for everyone here. This is about scale and cost.","type":"scale","options":["A simple temple or registered wedding","Modest, costs split equally between families","Traditional, each family bears its own costs","A large celebration, cost is not the main concern"],"regions":["all"],"tier":"core"},{"id":"giftcustoms","cat":"faith","weight":3,"allowNN":true,"type":"scale","regions":["north"],"text":"What about wedding gift customs: tilak, shagun, milni, barri?","help":"Both families have signed the No-Dowry Pledge. This is about the customs that sometimes carry dowry under another name.","options":["None of them, in any form","Only token amounts, same both ways","Customary gifts, but nothing demanded or itemised","These are tradition and should be kept as the elders decide"],"tier":"core"},{"id":"practice","cat":"faith","weight":3,"allowNN":true,"text":"How much daily religious practice do you want at home?","type":"scale","options":["Daily puja and sandhyavandanam","Puja on most days and all festivals","Festivals and special occasions","Cultural rather than ritual"],"regions":["all"],"tier":"core"},{"id":"vrat","cat":"faith","weight":2,"allowNN":false,"type":"scale","regions":["north"],"text":"Fasts like Karva Chauth, Teej or Hartalika?","options":["Kept fully, every year","Kept, in a simple way","Only if she wants to, never expected","Not something we keep"],"tier":"core"},{"id":"parents","cat":"family","weight":3,"allowNN":true,"text":"How should ageing parents on both sides be cared for?","type":"scale","options":["They should live with us","We should live close enough to see them daily","Regular visits and financial support","We will decide when the time comes"],"regions":["all"],"tier":"core"},{"id":"alcohol","cat":"home","weight":2,"allowNN":true,"text":"Where do you stand on alcohol?","type":"scale","options":["Neither of us should drink at all","Not in our home, occasional social drinking is fine","Occasional drinking is fine, including at home","Regular social drinking is fine"],"regions":["all"],"tier":"core"},{"id":"chores","cat":"home","weight":2,"allowNN":false,"text":"How should cooking and housework be divided?","type":"scale","options":["Split equally, whoever is free","Split by what each of us is better at","Mostly the wife, with help","Mostly hired help for both of us"],"regions":["all"],"tier":"core"},{"id":"money","cat":"work","weight":2,"allowNN":true,"text":"How should money be handled?","type":"scale","options":["One fully joint account","Joint for the home, personal accounts too","Mostly separate, split the bills","One of us manages everything"],"regions":["all"],"tier":"core"},{"id":"saving","cat":"work","weight":1,"allowNN":false,"text":"Saving or spending?","type":"scale","options":["Save hard, spend rarely","Save steadily, occasional treats","Balanced, enjoy the present too","Earn to enjoy now"],"regions":["all"],"tier":"core"},{"id":"ambition","cat":"work","weight":1,"allowNN":false,"text":"How do you want to balance work and home?","type":"scale","options":["Career comes first for the next several years","Ambitious, but with firm boundaries","Steady job, family comes first","Work is only a means to a settled home life"],"regions":["all"],"tier":"core"},{"id":"social","cat":"home","weight":1,"allowNN":false,"text":"What should your social life look like?","type":"scale","options":["Quiet home life, a few close people","Small circle, occasional gatherings","Frequent gatherings and relatives visiting","Always hosting, a full house"],"regions":["all"],"tier":"core"},{"id":"festivals","cat":"faith","weight":2,"allowNN":false,"text":"How fully should festivals be kept at home?","type":"scale","options":["Every festival, in full traditional form","The main festivals, properly","A few, kept simply","Mostly as family get-togethers"],"regions":["all"],"tier":"core"},{"id":"conflict","cat":"talk","weight":2,"allowNN":false,"text":"When you disagree, what do you do?","type":"exact","options":["Talk it through right away","Take time alone first, then talk","Let it pass, it usually settles","Ask elders to help settle it"],"regions":["all"],"tier":"core"},{"id":"decisions","cat":"talk","weight":2,"allowNN":false,"text":"Who makes the big decisions?","type":"scale","options":["Always the two of us, together","Each of us decides in our own areas","The two of us, after consulting parents","The elders of the family"],"regions":["all"],"tier":"core"},{"id":"privacy","cat":"family","weight":2,"allowNN":false,"text":"How much of married life should parents know?","type":"exact","options":["What is between us stays between us","We share most things with our parents","Depends on the matter"],"regions":["all"],"tier":"core"},{"id":"contact","cat":"family","weight":1,"allowNN":false,"text":"How often should you be in touch with your parents?","type":"scale","options":["Every day","A few times a week","Weekly","Now and then"],"regions":["all"],"tier":"core"},{"id":"language","cat":"culture","weight":2,"allowNN":false,"text":"What language should children speak at home?","type":"exact","options":["Our mother tongue only","Mother tongue and English","Mostly English","Whatever comes naturally"],"regions":["all"],"tier":"core"},{"id":"surname","cat":"culture","weight":1,"allowNN":false,"type":"exact","regions":["all"],"text":"Should she change her surname after marriage?","options":["Yes, take the husband's","Keep her own","Use both","Entirely her choice"],"tier":"core"},{"id":"upbringing","cat":"culture","weight":3,"allowNN":true,"text":"How should children be brought up?","type":"scale","options":["Full samskaras, shlokas and Veda learning","The main samskaras and some learning","Our values, without much ritual","Let them choose for themselves"],"regions":["all"],"tier":"core"},{"id":"astrology","cat":"faith","weight":2,"allowNN":true,"text":"How much should astrology decide?","type":"scale","options":["It decides: no match without a good score","Very important, but not the only thing","One factor among many","Not important to me"],"regions":["all"],"tier":"core"},{"id":"inlaws_stay","cat":"inlaws","weight":3,"allowNN":true,"type":"scale","text":"Your partner's parents want to stay with you for a few months. How is that?","help":"Answer for how you would actually feel, not how you think you should feel. Someone who says yes while resenting it is worse than someone who says it is hard.","options":["Very welcome, I would enjoy having them","Fine, I would make it work happily","I would manage, but it would be a strain","I would find that very difficult"],"tier":"advanced","regions":["all"]},{"id":"inlaws_mediate","cat":"inlaws","weight":3,"allowNN":true,"type":"exact","text":"Your parents and your partner disagree about something. What do you do?","help":"More marriages break on this one question than on any other in this list.","options":["Talk to my parents privately and take my partner's side if they are right","Stay neutral and let them sort it out","Ask my partner to adjust, because they are elders","Depends entirely on who is right"],"tier":"advanced","regions":["all"]},{"id":"inlaws_nearby","cat":"inlaws","weight":3,"allowNN":true,"type":"scale","text":"In time, where should your own parents live?","options":["With us, in our home","Same building or street, their own place","Same city, their own home","Wherever they are happiest, we visit"],"tier":"advanced","regions":["all"]},{"id":"functions","cat":"inlaws","weight":2,"type":"scale","text":"How many family functions and relatives' events do you actually want to attend?","help":"Weddings, housewarmings, naming ceremonies, condolence visits.","options":["All of them, that is what family means","Most of the close ones","Only the ones that really matter","As few as politeness allows"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"parents_money","cat":"inlaws","weight":3,"allowNN":true,"type":"exact","text":"Supporting parents financially, on both sides?","options":["Both sets equally, from joint money, openly","Each of us supports our own parents from our own income","Mainly the husband's parents","Only if there is a real need","We have not thought about it"],"tier":"advanced","regions":["all"]},{"id":"home_own","cat":"work","weight":2,"type":"scale","text":"Owning a home: how important?","options":["Buy as early as we can, even with a big EMI","Buy within a few years, carefully","Renting is fine, buy only if it makes sense","No interest in owning"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"home_split","cat":"work","weight":3,"allowNN":true,"type":"exact","text":"If you buy a home together, how are the cost and EMI split?","options":["Equally, both names on the papers","In proportion to what each earns, both names","Mostly the husband, both names","Mostly the husband, his name","Whoever can afford it, we will decide then"],"tier":"advanced","regions":["all"]},{"id":"money_open","cat":"work","weight":3,"allowNN":true,"type":"scale","text":"How open should you be about salary, savings and debts?","help":"Hidden money is one of the most reliable predictors of a marriage going wrong, more than how much there is.","options":["Everything known to both, always","Big things shared, small spending private","Each knows roughly, not the details","Finances stay largely separate"],"tier":"advanced","regions":["all"]},{"id":"jobloss","cat":"work","weight":2,"type":"exact","text":"If you lost your job tomorrow, what would you do?","options":["Take the first decent job and rebuild from there","Use savings and look properly for the right role","Retrain or study for something different","Try something of my own","I would lean on my family for a while"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"anger_me","cat":"temperament","weight":3,"allowNN":true,"type":"exact","text":"When you are really angry, what do you actually do?","options":["Go quiet and withdraw for a while","Say what I feel, calmly, there and then","Raise my voice, then cool down","Walk out of the room or the house","I rarely get that angry"],"tier":"advanced","regions":["all"]},{"id":"anger_voice","cat":"temperament","weight":3,"allowNN":true,"type":"scale","text":"Growing up, how were arguments at home settled?","help":"This asks about the home you come from, because it is usually the one people repeat without meaning to.","options":["Calmly, people talked things out","Tense silences, but no shouting","Voices were raised fairly often","Shouting was normal, sometimes worse"],"tier":"advanced","regions":["all"]},{"id":"anger_limit","cat":"temperament","weight":3,"allowNN":true,"type":"scale","text":"If your partner shouted at you regularly, what would you do?","help":"There is no wrong answer here, but it is worth knowing where each of you draws the line.","options":["That would end the marriage for me","I would insist we get help, and leave if it did not stop","I would try to manage it","That is normal in a marriage"],"tier":"advanced","regions":["all"]},{"id":"outlook","cat":"temperament","weight":1,"type":"scale","text":"When something goes wrong, which is closer to you?","options":["It will work out, it usually does","Hope for the best, plan for the worst","I assume the worst and am relieved when it is not","I worry about it for a long time"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"alone_time","cat":"temperament","weight":2,"type":"scale","text":"How much time alone do you need to feel like yourself?","options":["A lot, I recharge by being alone","Some every day","Not much, I prefer company","I would rather never be alone"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"people","cat":"temperament","weight":1,"type":"scale","text":"A room full of people you do not know.","options":["I love it, I will know half of them by the end","Fine, once I settle in","I manage, but it tires me","I would rather not go"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"equal_marriage","cat":"roles","weight":3,"allowNN":true,"type":"exact","text":"What does an equal marriage mean to you?","options":["Both earn, both cook, both decide, no fixed roles","Different roles, equal say in everything","Different roles, and in some matters one of us leads","Traditional roles, mutual respect within them"],"tier":"advanced","regions":["all"]},{"id":"career_move","cat":"roles","weight":3,"allowNN":true,"type":"exact","text":"Her job offers a move to another city. His does not.","options":["We move, his work adjusts","We decide by whose work gains more","We try long distance for a while","She turns it down, his work comes first"],"tier":"advanced","regions":["all"]},{"id":"her_income","cat":"roles","weight":2,"allowNN":true,"type":"exact","text":"Whose decision is it how a wife's income is spent?","options":["Hers alone","Hers, after the shared household costs","A joint decision, like all money","It goes into the family pot, the elders decide"],"tier":"advanced","regions":["all"]},{"id":"feminism","cat":"roles","weight":2,"type":"exact","text":"The word ‘feminism’. Which is closest to how you use it?","help":"There is no scored right answer. This exists so you both find out what the other means by the word before it comes up in an argument.","options":["Equal rights and opportunity, nothing more","Equal rights, and correcting what is still unequal","A good idea that has been taken too far","Not a word I use or find useful","I would rather discuss this in person"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"mh_support","cat":"health","weight":3,"allowNN":true,"type":"scale","text":"Your partner needs therapy or medication for their mental health. Your response?","help":"Roughly one person in seven in India lives with a mental health condition. The question is not whether it happens, but what happens next.","options":["I would help them find care and go with them","I would support it fully, privately","I would want to try other things first","I would be uncomfortable with it"],"tier":"advanced","regions":["all"]},{"id":"health_share","cat":"health","weight":3,"allowNN":true,"type":"scale","text":"Before marriage, how much health history should two people share?","help":"Ongoing conditions, past treatment, anything that affects children. Share it in person, not on a form.","options":["Everything, openly, both ways","Anything that affects the marriage or children","Only what is serious and current","It is private until it becomes relevant"],"tier":"advanced","regions":["all"]},{"id":"fitness","cat":"health","weight":1,"type":"scale","text":"Exercise and health habits?","options":["Daily, it matters a lot to me","A few times a week","Occasionally, I should do more","Not something I think about"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"smoking","cat":"health","weight":2,"allowNN":true,"type":"exact","text":"Smoking or tobacco?","options":["Neither of us, ever","I would not, and would prefer my partner did not","Occasionally is fine","I use tobacco"],"tier":"advanced","regions":["all"]},{"id":"pursuit","cat":"self","weight":0,"type":"profile","text":"Something you do that you would not give up after marriage?","help":"Shown to each other, not scored. There is no matching answer here, only an interesting one.","options":["A sport I play regularly","Music, singing or an instrument","Dance","Writing, art or photography","Volunteering or community work","Travel and the outdoors","Gaming","Nothing in particular right now"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"sunday","cat":"self","weight":0,"type":"profile","text":"A free Sunday with nothing planned.","options":["Out of the house early, somewhere new","Friends, food, people","Home, quiet, a book or a screen","Family and relatives","Catching up on work","Temple, then rest"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"friends","cat":"self","weight":2,"type":"scale","text":"Friendships after marriage?","options":["We each keep our own friends and see them freely","Mostly our own, some shared","Mostly together, as a couple","Family becomes the social circle"],"tier":"advanced","regions":["all"],"allowNN":false},{"id":"study","cat":"plans","weight":2,"type":"exact","text":"Any plans for further study?","options":["Yes, within the next few years","Maybe, if the right thing comes up","No, I am done studying","I would want my partner to be free to study"],"tier":"advanced","regions":["all"],"allowNN":false}],"regions":{"all":"Everywhere","north":"North and East India","south":"South India"},"tiers":{"core":"The essentials","advanced":"Going deeper"},"crossRules":[{"id":"shout","a":{"q":"anger_voice","in":[3]},"b":{"q":"anger_limit","in":[0,1]},"severity":"safety","text":"One of you comes from a home where shouting was normal, and the other says regular shouting would end the marriage. Talk about this before anything else."},{"id":"anger_style","a":{"q":"anger_me","in":[2]},"b":{"q":"anger_limit","in":[0]},"severity":"safety","text":"One of you raises their voice when angry; for the other that is a dealbreaker. This does not fix itself after marriage."},{"id":"inlaw_squeeze","a":{"q":"inlaws_nearby","in":[0]},"b":{"q":"inlaws_stay","in":[2,3]},"severity":"friction","text":"One of you expects parents living in the home; the other would find in-laws staying hard. Someone will be unhappy unless this is settled now."},{"id":"mh_stigma","a":{"q":"mh_support","in":[3]},"b":{"q":"health_share","in":[0,1]},"severity":"friction","text":"One of you would be uncomfortable with a partner in treatment, while the other values openness about health. That gap tends to turn into silence."},{"id":"money_hidden","a":{"q":"money_open","in":[3]},"b":{"q":"home_split","in":[0,1]},"severity":"friction","text":"One of you wants separate finances; the other expects a jointly owned, jointly paid home. Those two need reconciling before any purchase."}]};
+var HI={"lang":"hi","bankVersion":3,"note":"Hindi strings keyed by question id and option index. Reviewed by a native speaker before launch. Option arrays must stay the same length and order as questions.json.","ui":{"title":"क्या हम एक जैसा जीवन चाहते हैं?","lead":"कुंडली एक बात बताती है। यह दूसरी बात बताता है: क्या आप दोनों एक जैसा घर, माता-पिता के लिए एक जैसी भूमिका, और अपने बच्चों के लिए एक जैसी बात चाहते हैं।","startTogether":"हम दोनों, इसी फ़ोन पर","startInvite":"अभी उत्तर दें, उन्हें लिंक भेजें","question":"प्रश्न","of":"में से","next":"आगे","back":"पीछे","finish":"पूरा करें","nonNegotiable":"यह मेरे लिए समझौते योग्य नहीं है","nonNegotiableHelp":"यह दोगुना गिना जाता है, और असहमति होने पर इसे औसत में छिपाया नहीं जाता, बल्कि अलग से दिखाया जाता है।","dealbreakers":"जहाँ बात रुक सकती है","friction":"जिन पर बात करनी चाहिए","agreements":"जहाँ आप पहले से सहमत हैं","byArea":"क्षेत्र के अनुसार","talkAbout":"एक-दूसरे से पूछने लायक पाँच बातें","copyLink":"लिंक कॉपी करें","sendWhatsApp":"व्हाट्सऐप पर भेजें","handOver":"अब फ़ोन दूसरे व्यक्ति को दें","youAnswer":"आपके उत्तर","person1":"पहला व्यक्ति","person2":"दूसरा व्यक्ति","you":"आप","they":"वे","startOver":"फिर से शुरू करें","ofHundred":"100 में से","coreDone":"मुख्य प्रश्न पूरे हुए","advancedTitle":"थोड़ा और गहराई में?","advancedLead":"ससुराल, पैसा, गुस्सा, बराबरी और सेहत पर कुछ और प्रश्न। जो विवाह टूटते हैं, वे अक्सर इन्हीं बातों पर टूटते हैं। यह वैकल्पिक है, और किसी भी प्रश्न को छोड़ा जा सकता है।","advancedYes":"हाँ, आगे बढ़ें","advancedNo":"नहीं, रिपोर्ट दिखाएँ","skip":"यह प्रश्न छोड़ें","skipped":"छोड़ा गया","notScored":"इसका अंक नहीं लगता","flagsTitle":"सबसे पहले यह पढ़ें","profilesTitle":"एक-दूसरे के बारे में","onlyOne":"इनमें से कुछ प्रश्न केवल एक ने भरे","tierCore":"मुख्य","tierAdvanced":"गहराई में"},"bands":{"strong":"आप दोनों लगभग एक जैसा जीवन चाहते हैं","workable":"मोटे तौर पर सहमति है, कुछ असली मतभेद सुलझाने हैं","stretch":"तभी निभेगा जब दोनों पक्ष झुकने को तैयार हों","difficult":"आप दोनों अलग-अलग जीवन चाहते हैं"},"categories":{"home":"घर-गृहस्थी","family":"परिवार","plans":"जीवन की योजनाएँ","work":"काम और पैसा","faith":"धर्म और संस्कार","talk":"आपसी बातचीत","culture":"बच्चों की परवरिश","inlaws":"ससुराल और बड़ा परिवार","temperament":"स्वभाव","roles":"भूमिकाएँ और बराबरी","health":"सेहत और मन","self":"रुचियाँ और समय"},"questions":{"diet":{"text":"आपके घर में क्या बनना चाहिए?","help":"अपनी रसोई की बात, दूसरों की नहीं। यहाँ कोई सही या ग़लत उत्तर नहीं है: बंगाली और मैथिल परिवारों में मछली परंपरा है, कश्मीरी पंडितों में माँस, और अधिकांश अन्य में शाकाहार।","options":["पूर्ण शाकाहारी","शाकाहारी, अंडा चलेगा","मछली बनती है","माँस बनता है"]},"allium":{"text":"खाने में प्याज़ और लहसुन?","options":["बिल्कुल नहीं","व्रत और त्योहार के दिनों में नहीं","सामान्य रूप से चलता है"]},"living":{"text":"विवाह के बाद आप दोनों कहाँ रहेंगे?","options":["माता-पिता के साथ संयुक्त परिवार में","अपना घर, माता-पिता के उसी शहर में","अपना घर, जहाँ काम ले जाए, आना-जाना लगा रहे","अपना घर, पूरी तरह स्वतंत्र"]},"newbride":{"text":"घर में नई बहू से किन रीति-रिवाजों की अपेक्षा होगी?","help":"जैसे घूँघट, बड़ों के पैर छूना, या अकेले बाहर जाने पर रोक। वही कहिए जो वास्तव में अपेक्षित है, वह नहीं जो आधुनिक लगे।","options":["सामान्य आदर के अलावा कुछ नहीं","बड़ों का औपचारिक आदर, कोई रोक-टोक नहीं","बड़ों और मेहमानों के सामने पारंपरिक रीति","घर में पूरी पारंपरिक रीति"]},"relocate":{"text":"काम या परिवार के लिए आप कितनी दूर जा सकते हैं?","options":["मैं अपने मौजूदा शहर में ही रहना चाहता/चाहती हूँ","राज्य के भीतर कहीं भी","भारत में कहीं भी","विदेश में रहने के लिए तैयार"]},"bothwork":{"text":"क्या विवाह के बाद दोनों को नौकरी करनी चाहिए?","options":["हम दोनों को काम करना चाहिए","जो चाहे, जब चाहे","एक को घर पर ध्यान देना चाहिए, कम से कम कुछ वर्ष","मैं चाहूँगा/चाहूँगी कि मेरा साथी काम न करे"]},"children":{"text":"आप बच्चे कब चाहेंगे?","options":["पहले दो वर्षों में","कुछ वर्ष साथ रहने के बाद","अभी तय नहीं","मैं बच्चे नहीं चाहता/चाहती"]},"wedding":{"text":"आप कैसा विवाह चाहते हैं?","help":"दहेज यहाँ सबके लिए वर्जित है। यह बात आयोजन के आकार और ख़र्च की है।","options":["सादा मंदिर या रजिस्टर विवाह","साधारण, ख़र्च दोनों परिवारों में बराबर","पारंपरिक, हर परिवार अपना ख़र्च उठाए","बड़ा आयोजन, ख़र्च मुख्य बात नहीं"]},"giftcustoms":{"text":"तिलक, शगुन, मिलनी, बरी जैसी रीतियों के बारे में क्या?","help":"दोनों परिवारों ने दहेज-विरोधी शपथ ली है। यह उन रीतियों की बात है जो कभी-कभी दूसरे नाम से दहेज बन जाती हैं।","options":["किसी भी रूप में नहीं","केवल प्रतीकात्मक, दोनों ओर बराबर","रीति के अनुसार उपहार, पर कोई माँग या सूची नहीं","ये परंपरा हैं, बड़े जैसा तय करें वैसा हो"]},"practice":{"text":"घर में रोज़ कितनी पूजा-पाठ चाहते हैं?","options":["रोज़ पूजा और संध्यावंदन","अधिकतर दिन पूजा और सभी त्योहार","त्योहार और विशेष अवसर","रीति से अधिक संस्कृति के रूप में"]},"vrat":{"text":"करवा चौथ, तीज या हरतालिका जैसे व्रत?","options":["हर वर्ष, पूरी तरह","रखे जाएँ, सादगी से","यदि वह चाहे तभी, अपेक्षा कभी नहीं","हम ये नहीं रखते"]},"parents":{"text":"दोनों ओर के बुज़ुर्ग माता-पिता की देखभाल कैसे हो?","options":["उन्हें हमारे साथ रहना चाहिए","इतने पास रहें कि रोज़ मिल सकें","नियमित मिलना और आर्थिक सहयोग","समय आने पर तय करेंगे"]},"alcohol":{"text":"शराब के बारे में आपका क्या विचार है?","options":["हम दोनों में से कोई न पिए","घर में नहीं, कभी-कभार सामाजिक रूप से ठीक है","कभी-कभार ठीक है, घर में भी","नियमित सामाजिक रूप से ठीक है"]},"chores":{"text":"खाना बनाना और घर का काम कैसे बँटे?","options":["बराबर, जो भी खाली हो","जिसे जो बेहतर आता हो","अधिकतर पत्नी, सहायता के साथ","अधिकतर काम के लिए मदद रखी जाए"]},"money":{"text":"पैसे का प्रबंध कैसे हो?","options":["एक पूरी तरह संयुक्त खाता","घर के लिए संयुक्त, निजी खाते भी","अधिकतर अलग, ख़र्च बाँट लें","एक व्यक्ति सब सँभाले"]},"saving":{"text":"बचत या ख़र्च?","options":["ख़ूब बचत, ख़र्च कम","नियमित बचत, कभी-कभी शौक","संतुलित, वर्तमान का भी आनंद","कमाना ही है तो आज जी लें"]},"ambition":{"text":"काम और घर में संतुलन कैसा हो?","options":["आने वाले कई वर्ष करियर पहले","महत्वाकांक्षी, पर सीमाएँ तय","स्थिर नौकरी, परिवार पहले","काम केवल एक बसे-बसाए घर का साधन है"]},"social":{"text":"आपका सामाजिक जीवन कैसा हो?","options":["शांत घर, कुछ क़रीबी लोग","छोटा दायरा, कभी-कभी मिलना-जुलना","बार-बार आयोजन और रिश्तेदारों का आना","हमेशा मेहमान, भरा-पूरा घर"]},"festivals":{"text":"घर में त्योहार कितने पूरे तरीक़े से मनें?","options":["हर त्योहार, पूरी पारंपरिक विधि से","मुख्य त्योहार, विधि से","कुछ ही, सादगी से","अधिकतर पारिवारिक मिलन के रूप में"]},"conflict":{"text":"मतभेद होने पर आप क्या करते हैं?","options":["उसी समय बात करके सुलझाते हैं","पहले अकेले समय लेते हैं, फिर बात","जाने देते हैं, अपने आप ठीक हो जाता है","बड़ों से कहकर सुलझवाते हैं"]},"decisions":{"text":"बड़े फ़ैसले कौन करता है?","options":["हमेशा हम दोनों, साथ मिलकर","अपने-अपने क्षेत्र में हर कोई","हम दोनों, माता-पिता से पूछकर","घर के बड़े"]},"privacy":{"text":"वैवाहिक जीवन की कितनी बातें माता-पिता को पता होनी चाहिए?","options":["जो हमारे बीच है वह हमारे बीच रहे","अधिकतर बातें माता-पिता से साझा करते हैं","बात पर निर्भर करता है"]},"contact":{"text":"अपने माता-पिता से कितनी बार बात हो?","options":["रोज़","सप्ताह में कई बार","सप्ताह में एक बार","कभी-कभार"]},"language":{"text":"बच्चे घर में कौन सी भाषा बोलें?","options":["केवल अपनी मातृभाषा","मातृभाषा और अंग्रेज़ी","अधिकतर अंग्रेज़ी","जो स्वाभाविक रूप से आए"]},"surname":{"text":"क्या विवाह के बाद उसे उपनाम बदलना चाहिए?","options":["हाँ, पति का लगाए","अपना ही रखे","दोनों इस्तेमाल करे","पूरी तरह उसकी मर्ज़ी"]},"upbringing":{"text":"बच्चों की परवरिश कैसी हो?","options":["पूरे संस्कार, श्लोक और वेद शिक्षा","मुख्य संस्कार और कुछ शिक्षा","हमारे मूल्य, बिना अधिक कर्मकांड के","वे स्वयं चुनें"]},"astrology":{"text":"ज्योतिष कितना तय करे?","options":["यही तय करे: अच्छे गुण बिना कोई रिश्ता नहीं","बहुत महत्वपूर्ण, पर एकमात्र बात नहीं","कई बातों में से एक","मेरे लिए महत्वपूर्ण नहीं"]},"kids_count":{"text":"आप कितने बच्चे चाहेंगे?","options":["एक","दो","तीन या अधिक","कोई नहीं","जो हो जाए, देखेंगे"]},"inlaws_stay":{"text":"आपके साथी के माता-पिता कुछ महीनों के लिए आपके साथ रहना चाहें। कैसा लगेगा?","help":"वही लिखिए जो सच में महसूस होगा, वह नहीं जो लिखना चाहिए। मन में बोझ रखकर 'हाँ' कहना, साफ़ 'मुश्किल है' कहने से बुरा है।","options":["बहुत अच्छा, मुझे ख़ुशी होगी","ठीक है, मैं ख़ुशी से निभा लूँगा/लूँगी","निभा लूँगा/लूँगी, पर बोझ लगेगा","मुझे यह बहुत मुश्किल लगेगा"]},"inlaws_mediate":{"text":"आपके माता-पिता और आपके साथी के बीच मतभेद हो जाए। आप क्या करेंगे?","help":"भारत में जितनी शादियाँ इस एक सवाल पर टूटती हैं, उतनी किसी और पर नहीं।","options":["माता-पिता से अकेले में बात करूँगा/करूँगी, और साथी सही हो तो उनका साथ दूँगा/दूँगी","तटस्थ रहूँगा/रहूँगी, वे ख़ुद सुलझा लें","साथी से कहूँगा/कहूँगी कि समझौता कर लें, वे बड़े हैं","पूरी तरह इस पर कि सही कौन है"]},"inlaws_nearby":{"text":"आगे चलकर आपके अपने माता-पिता कहाँ रहें?","options":["हमारे साथ, हमारे घर में","उसी इमारत या गली में, अपने घर में","उसी शहर में, अपने घर में","जहाँ वे ख़ुश हों, हम मिलने जाएँ"]},"functions":{"text":"परिवार और रिश्तेदारों के कितने आयोजनों में सच में जाना चाहेंगे?","help":"शादी, गृह प्रवेश, नामकरण, शोक में जाना।","options":["सभी में, परिवार इसी का नाम है","अधिकतर क़रीबी आयोजनों में","केवल उनमें जो वाक़ई ज़रूरी हों","जितने में शिष्टाचार निभ जाए"]},"parents_money":{"text":"दोनों ओर के माता-पिता की आर्थिक मदद?","options":["दोनों की बराबर, साझा पैसे से, खुलकर","हर कोई अपनी कमाई से अपने माता-पिता की","मुख्य रूप से पति के माता-पिता की","केवल तब जब सच में ज़रूरत हो","हमने इस पर सोचा नहीं है"]},"home_own":{"text":"अपना घर होना कितना ज़रूरी है?","options":["जितनी जल्दी हो, चाहे EMI भारी हो","कुछ वर्षों में, सोच-समझकर","किराया ठीक है, समझदारी हो तभी ख़रीदें","घर ख़रीदने में रुचि नहीं"]},"home_split":{"text":"साथ में घर लें तो क़ीमत और EMI कैसे बँटे?","options":["बराबर, काग़ज़ों पर दोनों के नाम","जो जितना कमाता है उस अनुपात में, दोनों के नाम","अधिकतर पति, दोनों के नाम","अधिकतर पति, उसी के नाम","जो वहन कर सके, तब तय करेंगे"]},"money_open":{"text":"तनख़्वाह, बचत और क़र्ज़ के बारे में कितनी खुली बात हो?","help":"छिपाया हुआ पैसा, पैसे की कमी से कहीं ज़्यादा शादियाँ बिगाड़ता है।","options":["सब कुछ दोनों को पता, हमेशा","बड़ी बातें साझा, छोटा ख़र्च निजी","मोटा-मोटी पता, ब्योरा नहीं","पैसा काफ़ी हद तक अलग रहे"]},"jobloss":{"text":"कल नौकरी चली जाए तो आप क्या करेंगे?","options":["जो ठीक-ठाक मिले वह लेकर फिर से शुरू","बचत से काम चलाकर सही नौकरी ढूँढूँगा/ढूँढूँगी","कुछ नया सीखकर दूसरी राह","अपना कुछ शुरू करने की कोशिश","कुछ समय परिवार का सहारा लूँगा/लूँगी"]},"anger_me":{"text":"जब आपको सच में गुस्सा आता है, तो आप असल में करते क्या हैं?","options":["चुप हो जाता/जाती हूँ, कुछ देर दूर रहता/रहती हूँ","जो महसूस होता है, शांति से उसी समय कह देता/देती हूँ","आवाज़ ऊँची हो जाती है, फिर शांत हो जाता/जाती हूँ","कमरे या घर से बाहर निकल जाता/जाती हूँ","मुझे इतना गुस्सा कम ही आता है"]},"anger_voice":{"text":"बचपन में आपके घर में झगड़े कैसे निपटते थे?","help":"यह उस घर के बारे में है जहाँ से आप आए हैं, क्योंकि अक्सर लोग अनजाने में वही दोहराते हैं।","options":["शांति से, बात करके","तनाव रहता था, पर चिल्लाना नहीं","आवाज़ें अक्सर ऊँची होती थीं","चिल्लाना आम था, कभी-कभी उससे आगे भी"]},"anger_limit":{"text":"अगर आपका साथी आप पर नियमित रूप से चिल्लाए, तो आप क्या करेंगे?","help":"यहाँ कोई ग़लत उत्तर नहीं है, पर यह जानना ज़रूरी है कि दोनों की सीमा कहाँ है।","options":["मेरे लिए वहीं शादी ख़त्म","मदद लेने पर ज़ोर दूँगा/दूँगी, न रुके तो चला जाऊँगा/जाऊँगी","सँभालने की कोशिश करूँगा/करूँगी","शादी में यह सामान्य बात है"]},"outlook":{"text":"जब कुछ ग़लत होता है, तो आपके क़रीब क्या है?","options":["सब ठीक हो जाएगा, अक्सर होता ही है","अच्छे की उम्मीद, बुरे की तैयारी","मैं बुरा ही मान लेता/लेती हूँ, न हो तो राहत","मैं देर तक चिंता करता/करती रहता/रहती हूँ"]},"alone_time":{"text":"ख़ुद जैसा महसूस करने के लिए कितना अकेला समय चाहिए?","options":["बहुत, अकेले रहकर ही मैं भरता/भरती हूँ","रोज़ थोड़ा","ज़्यादा नहीं, मुझे साथ अच्छा लगता है","मैं अकेला/अकेली रहना ही नहीं चाहता/चाहती"]},"people":{"text":"एक कमरा भरा हुआ, सब अनजान लोग।","options":["मज़ा आएगा, आधों को जान लूँगा/लूँगी","ठीक है, थोड़ी देर में घुल-मिल जाऊँगा/जाऊँगी","निभा लूँगा/लूँगी, पर थक जाता/जाती हूँ","मैं न ही जाऊँ तो बेहतर"]},"equal_marriage":{"text":"बराबरी वाली शादी का आपके लिए क्या मतलब है?","options":["दोनों कमाएँ, दोनों पकाएँ, दोनों तय करें, कोई तय भूमिका नहीं","भूमिकाएँ अलग, पर हर बात में बराबर राय","भूमिकाएँ अलग, और कुछ मामलों में एक की चले","पारंपरिक भूमिकाएँ, उनमें आपसी आदर"]},"career_move":{"text":"उसकी नौकरी दूसरे शहर ले जा रही है। उसकी नहीं।","options":["हम चलेंगे, उसका काम समायोजित होगा","जिसके काम को ज़्यादा फ़ायदा हो, उससे तय","कुछ समय अलग-अलग शहर में रह लेंगे","वह मना कर दे, उसका काम पहले"]},"her_income":{"text":"पत्नी की कमाई कैसे ख़र्च हो, यह किसका फ़ैसला है?","options":["सिर्फ़ उसका","उसका, घर के साझा ख़र्च के बाद","साझा फ़ैसला, बाक़ी पैसे की तरह","घर के साझा कोष में जाए, बड़े तय करें"]},"feminism":{"text":"'नारीवाद' शब्द। आप इसे किस अर्थ में लेते हैं?","help":"यहाँ कोई सही उत्तर नहीं गिना जाता। यह इसलिए है कि झगड़े के बीच नहीं, पहले पता चल जाए कि दोनों इस शब्द से क्या समझते हैं।","options":["बराबर अधिकार और अवसर, बस इतना","बराबर अधिकार, और जो अब भी असमान है उसे ठीक करना","अच्छी बात थी, पर अब हद से आगे चली गई","यह शब्द मैं इस्तेमाल नहीं करता/करती","इस पर आमने-सामने बात करना ठीक रहेगा"]},"mh_support":{"text":"आपके साथी को मानसिक स्वास्थ्य के लिए इलाज या दवा की ज़रूरत पड़े। आप क्या करेंगे?","help":"भारत में क़रीब हर सातवाँ व्यक्ति किसी मानसिक स्वास्थ्य समस्या से गुज़रता है। सवाल यह नहीं कि ऐसा होगा या नहीं, सवाल यह है कि उसके बाद क्या होगा।","options":["इलाज ढूँढने में मदद करूँगा/करूँगी और साथ जाऊँगा/जाऊँगी","पूरा साथ दूँगा/दूँगी, बिना बात फैलाए","पहले कुछ और तरीक़े आज़माना चाहूँगा/चाहूँगी","मुझे इससे असहजता होगी"]},"health_share":{"text":"शादी से पहले सेहत के बारे में कितना बताना चाहिए?","help":"चल रही बीमारी, पुराना इलाज, और जो बच्चों पर असर डाले। यह बात आमने-सामने हो, फ़ॉर्म पर नहीं।","options":["सब कुछ, खुलकर, दोनों ओर से","जो शादी या बच्चों पर असर डाले","केवल जो गंभीर और मौजूदा हो","जब तक ज़रूरी न हो, निजी बात है"]},"fitness":{"text":"व्यायाम और सेहत की आदतें?","options":["रोज़, यह मेरे लिए बहुत मायने रखता है","सप्ताह में कुछ बार","कभी-कभी, करना तो चाहिए","इस पर ध्यान नहीं देता/देती"]},"smoking":{"text":"धूम्रपान या तंबाकू?","options":["हम दोनों में से कोई नहीं, कभी नहीं","मैं नहीं, और चाहूँगा/चाहूँगी कि साथी भी नहीं","कभी-कभार ठीक है","मैं तंबाकू लेता/लेती हूँ"]},"pursuit":{"text":"ऐसा कुछ जो आप करते हैं और शादी के बाद भी नहीं छोड़ेंगे?","help":"यह दोनों को दिखेगा, इसका अंक नहीं लगता। यहाँ मिलता-जुलता उत्तर ज़रूरी नहीं, दिलचस्प उत्तर काफ़ी है।","options":["कोई खेल जो मैं नियमित खेलता/खेलती हूँ","संगीत, गायन या कोई वाद्य","नृत्य","लेखन, कला या फ़ोटोग्राफ़ी","समाजसेवा","घूमना और प्रकृति","गेमिंग","अभी ख़ास कुछ नहीं"]},"sunday":{"text":"बिना किसी योजना के एक ख़ाली रविवार।","options":["सुबह ही घर से बाहर, कहीं नई जगह","दोस्त, खाना, लोग","घर, शांति, किताब या स्क्रीन","परिवार और रिश्तेदार","रुका हुआ काम निपटाना","मंदिर, फिर आराम"]},"friends":{"text":"शादी के बाद दोस्ती?","options":["हम दोनों अपने दोस्त रखें और खुलकर मिलें","अधिकतर अपने, कुछ साझा","अधिकतर साथ, जोड़े की तरह","परिवार ही सामाजिक दायरा बन जाए"]},"study":{"text":"आगे पढ़ाई की कोई योजना?","options":["हाँ, अगले कुछ वर्षों में","शायद, सही मौक़ा मिले तो","नहीं, पढ़ाई पूरी","मैं चाहूँगा/चाहूँगी कि मेरा साथी पढ़ने को आज़ाद रहे"]}}};
 
-var LANG='en', REGION='north';
+var LANG='en', REGION='north', SKIPPED=-1;
+
 function T(path, fallback){
   if(LANG!=='hi') return fallback;
   var cur=HI, parts=path.split('.');
@@ -246,51 +263,73 @@ function T(path, fallback){
 var CATS={};
 function setLang(l){
   LANG=l;
-  var base = BANK.categories;
-  Object.keys(base).forEach(function(k){ CATS[k] = T('categories.'+k, base[k]); });
+  Object.keys(BANK.categories).forEach(function(k){ CATS[k]=T('categories.'+k, BANK.categories[k]); });
 }
+function ui(k, fb){ return (LANG==='hi' && HI.ui[k]) ? HI.ui[k] : fb; }
 function qText(q){ return T('questions.'+q.id+'.text', q.text); }
 function qHelp(q){ return T('questions.'+q.id+'.help', q.help||''); }
 function qOpts(q){
   var t = LANG==='hi' && HI.questions[q.id] ? HI.questions[q.id].options : null;
   return (t && t.length===q.options.length) ? t : q.options;
 }
-/** Questions for the chosen region. A question tagged for one region is hidden
+/** Right tier, right region. A question tagged for one region is hidden
  *  elsewhere, so nobody is asked about Karva Chauth in Kanchipuram. */
-function activeQuestions(){
+function activeQuestions(withAdvanced){
   return BANK.questions.filter(function(q){
+    if(q.tier==='advanced' && !withAdvanced) return false;
     var r=q.regions||['all'];
     return r.indexOf('all')>=0 || r.indexOf(REGION)>=0;
   });
 }
-var Q = [];
+var Q=[];
 setLang('en');
 
 /* ---------------- scoring (mirrors compat.ts) --------------- */
-var SCALE = [100,70,30,0];
+var SCALE=[100,70,30,0];
+function answered(v){ return v!=null && v!==SKIPPED; }
 function lineScore(q,a,b){
   if(q.type==='exact') return a===b?100:0;
   return SCALE[Math.min(Math.abs(a-b), SCALE.length-1)];
 }
+/** The dangerous pattern is rarely two people disagreeing on one question.
+ *  It is one person's answer to A sitting badly against the other's to B. */
+function crossFlags(A,B){
+  var out=[], ids={};
+  BANK.questions.forEach(function(q){ ids[q.id]=1; });
+  (BANK.crossRules||[]).forEach(function(r){
+    if(!ids[r.a.q] || !ids[r.b.q]) return;
+    function hit(X,Y){
+      return answered(X.picks[r.a.q]) && r.a.in.indexOf(X.picks[r.a.q])>=0 &&
+             answered(Y.picks[r.b.q]) && r.b.in.indexOf(Y.picks[r.b.q])>=0;
+    }
+    if(hit(A,B)||hit(B,A)) out.push({id:r.id,severity:r.severity,text:r.text});
+  });
+  return out.sort(function(x,y){ return (x.severity==='safety'?0:1)-(y.severity==='safety'?0:1); });
+}
 function compare(A,B){
-  var lines=[];
+  var lines=[], profiles=[], skipped=0;
   Q.forEach(function(q){
     var a=A.picks[q.id], b=B.picks[q.id];
-    if(a==null||b==null) return;
+    if(!answered(a)||!answered(b)){ if(answered(a)!==answered(b)) skipped++; return; }
+    if(q.type==='profile'){ profiles.push({q:q,a:a,b:b}); return; }
     var nn = q.allowNN && (A.nn.indexOf(q.id)>=0 || B.nn.indexOf(q.id)>=0);
     var sc = lineScore(q,a,b);
     lines.push({q:q,a:a,b:b,score:sc,weight:q.weight*(nn?2:1),nn:nn,dealbreaker:nn&&sc<50});
   });
-  var tw = lines.reduce(function(s,l){return s+l.weight},0);
-  var raw = tw ? Math.round(lines.reduce(function(s,l){return s+l.score*l.weight},0)/tw) : 0;
-  var deal = lines.filter(function(l){return l.dealbreaker});
-  var fric = lines.filter(function(l){return !l.dealbreaker && l.score<70})
-                  .sort(function(x,y){return (y.weight-x.weight)||(x.score-y.score)});
-  var agree = lines.filter(function(l){return l.score>=85}).sort(function(x,y){return y.weight-x.weight});
-  var band = deal.length>=2 ? 'difficult'
-           : deal.length===1 ? (raw>=70?'stretch':'difficult')
+  var tw=lines.reduce(function(s2,l){return s2+l.weight},0);
+  var raw=tw?Math.round(lines.reduce(function(s2,l){return s2+l.score*l.weight},0)/tw):0;
+  var deal=lines.filter(function(l){return l.dealbreaker});
+  var fric=lines.filter(function(l){return !l.dealbreaker && l.score<70})
+                .sort(function(x,y){return (y.weight-x.weight)||(x.score-y.score)});
+  var agree=lines.filter(function(l){return l.score>=85}).sort(function(x,y){return y.weight-x.weight});
+  var flags=crossFlags(A,B);
+  var safety=flags.filter(function(f){return f.severity==='safety'}).length;
+  // A dealbreaker or a safety flag caps the band however good the average is.
+  var capped=deal.length+safety;
+  var band = capped>=2 ? 'difficult'
+           : capped===1 ? (raw>=70?'stretch':'difficult')
            : raw>=80 ? 'strong' : raw>=65 ? 'workable' : raw>=50 ? 'stretch' : 'difficult';
-  var verdict = (LANG==='hi' ? HI.bands : {strong:'You want much the same life',
+  var verdict=(LANG==='hi'?HI.bands:{strong:'You want much the same life',
     workable:'Broadly aligned, with real differences to settle',
     stretch:'Workable only if both sides are ready to move',
     difficult:'You want different lives'})[band];
@@ -302,34 +341,42 @@ function compare(A,B){
   var byCat=Object.keys(cats).map(function(k){
     return {cat:k,score:Math.round(cats[k].sum/cats[k].w),count:cats[k].n};
   }).sort(function(x,y){return x.score-y.score});
-  return {score:raw,band:band,verdict:verdict,answered:lines.length,
-          dealbreakers:deal,friction:fric,agreements:agree,byCategory:byCat};
+  return {score:raw,band:band,verdict:verdict,answered:lines.length,skipped:skipped,
+          dealbreakers:deal,friction:fric,agreements:agree,profiles:profiles,
+          flags:flags,byCategory:byCat};
 }
 
-/* ---------------- encode / decode for the share link --------------- */
+/* ------------- encode / decode: one char per question in the FULL bank,
+   so a link still reads after a region or tier switch ------------- */
 function encode(ans){
-  var picks = BANK.questions.map(function(q){ var v=ans.picks[q.id]; return v==null?'x':String(v); }).join('');
-  var nn = BANK.questions.map(function(q){ return ans.nn.indexOf(q.id)>=0?'1':'0'; }).join('');
-  return btoa(picks+'.'+nn).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  var picks=BANK.questions.map(function(q){
+    var v=ans.picks[q.id];
+    if(v===SKIPPED) return 's';
+    return v==null ? 'x' : String(v);
+  }).join('');
+  var nn=BANK.questions.map(function(q){ return ans.nn.indexOf(q.id)>=0?'1':'0'; }).join('');
+  var adv = ans.advanced===false ? '0':'1';
+  return btoa(picks+'.'+nn+'.'+adv).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
-function decode(s){
+function decode(str){
   try{
-    var raw = atob(s.replace(/-/g,'+').replace(/_/g,'/'));
-    var parts = raw.split('.');
-    if(parts.length!==2 || parts[0].length!==BANK.questions.length) return null;
+    var raw=atob(str.replace(/-/g,'+').replace(/_/g,'/'));
+    var p=raw.split('.');
+    if(p.length<2 || p[0].length!==BANK.questions.length) return null;
     var picks={}, nn=[];
     BANK.questions.forEach(function(q,i){
-      var c=parts[0][i];
-      if(c!=='x') picks[q.id]=parseInt(c,10);
-      if(parts[1][i]==='1') nn.push(q.id);
+      var c=p[0][i];
+      if(c==='s') picks[q.id]=SKIPPED;
+      else if(c!=='x') picks[q.id]=parseInt(c,10);
+      if(p[1][i]==='1') nn.push(q.id);
     });
-    return {picks:picks,nn:nn};
+    return {picks:picks,nn:nn,advanced:p[2]!=='0'};
   }catch(e){ return null; }
 }
 
 /* ---------------- state --------------- */
-var S = {mode:'together', who:0, i:0, A:blank(), B:blank(), invited:null};
-function blank(){ return {picks:{}, nn:[]}; }
+var S = {mode:'together', who:0, i:0, tier:'core', A:blank(), B:blank(), invited:null};
+function blank(){ return {picks:{}, nn:[], advanced:true}; }
 function cur(){ return S.who===0 ? S.A : S.B; }
 var el=function(s){return document.querySelector(s)};
 function show(v){
@@ -345,7 +392,7 @@ function save(){ try{ S.region=REGION; S.lang=LANG; localStorage.setItem('sapt_c
 function restore(){
   try{ var v=JSON.parse(localStorage.getItem('sapt_compat')||'null');
     if(v && v.A && v.B){ S=v; if(S.region) REGION=S.region; if(S.lang) LANG=S.lang;
-      setLang(LANG); Q=activeQuestions(); return true; } }catch(e){}
+      setLang(LANG); Q=activeQuestions(S.tier==='advanced'); return true; } }catch(e){}
   return false;
 }
 
@@ -356,7 +403,7 @@ var LANG_LABELS={en:'English',hi:'हिन्दी'};
 
 function paintIntro(){
   setLang(LANG);
-  Q = activeQuestions();
+  Q = activeQuestions(false);
   el('#covers').innerHTML = Object.keys(CATS).map(function(k){
     return '<span class="chip">'+CATS[k]+'</span>'; }).join('');
   el('#regionPills').innerHTML = ['north','south'].map(function(r){
@@ -370,27 +417,27 @@ function paintIntro(){
   el('#langPills').querySelectorAll('.pill').forEach(function(b){
     b.onclick=function(){ LANG=b.dataset.l; save(); paintIntro(); }; });
 
-  var n=Q.length, extra=n-BANK.questions.filter(function(q){return (q.regions||['all']).indexOf('all')>=0}).length;
+  var n=Q.length, adv=activeQuestions(true).length-n;
   el('#regionNote').textContent = LANG==='hi'
-    ? n+' प्रश्न, लगभग सात मिनट।'+(extra>0?' इनमें '+extra+' प्रश्न आपके क्षेत्र के रीति-रिवाजों पर हैं।':'')
-    : n+' questions, about seven minutes.'+(extra>0?' '+extra+' of them are about customs specific to your region.':'');
+    ? n+' मुख्य प्रश्न, लगभग सात मिनट। उसके बाद ससुराल, पैसे, गुस्से और बराबरी पर '+adv+' वैकल्पिक प्रश्न।'
+    : n+' core questions, about seven minutes. Then '+adv+' optional ones on in-laws, money, temperament and equality.';
 
-  var ui = LANG==='hi' ? HI.ui : null;
-  if(ui){
+  var str = LANG==='hi' ? HI.ui : null;
+  if(str){
     el('#lblRegion').textContent='आपका परिवार कहाँ से है';
     el('#lblLang').textContent='भाषा';
-    document.querySelector('.hero h1').textContent=ui.title;
-    document.querySelector('.hero p:not(.sans)').textContent=ui.lead;
-    el('#restartBtn').textContent=ui.startOver;
+    document.querySelector('.hero h1').textContent=str.title;
+    document.querySelector('.hero p').textContent=str.lead;
+    el('#restartBtn').textContent=str.startOver;
   } else {
     el('#lblRegion').textContent='Your family is from';
     el('#lblLang').textContent='Language';
     document.querySelector('.hero h1').textContent='Do we want the same life?';
-    document.querySelector('.hero p:not(.sans)').textContent='The horoscope tells you one thing. This tells you another: whether you both want the same home, the same role for parents, the same thing for your children.';
+    document.querySelector('.hero p').textContent='The horoscope tells you one thing. This tells you another: whether you both want the same home, the same role for parents, the same thing for your children.';
     el('#restartBtn').textContent='Start over';
   }
   document.querySelectorAll('[data-t]').forEach(function(n2){
-    var v = ui ? ui[n2.dataset.t] : null;
+    var v = str ? str[n2.dataset.t] : null;
     if(v) n2.textContent = v;
   });
 }
@@ -398,14 +445,14 @@ paintIntro();
 
 document.querySelectorAll('[data-start]').forEach(function(b){
   b.onclick=function(){
-    S.mode=b.dataset.start; S.who=0; S.i=0; S.A=blank(); S.B=blank();
-    Q=activeQuestions();
+    S.mode=b.dataset.start; S.who=0; S.i=0; S.tier='core'; S.A=blank(); S.B=blank();
+    Q=activeQuestions(false);
     save(); show('quiz'); render();
   };
 });
 el('#restartBtn').onclick=function(){
   if(!confirm('Clear both sets of answers and start again?')) return;
-  S={mode:'together',who:0,i:0,A:blank(),B:blank(),invited:null};
+  S={mode:'together',who:0,i:0,tier:'core',A:blank(),B:blank(),invited:null};
   try{localStorage.removeItem('sapt_compat');}catch(e){}
   history.replaceState(null,'',location.pathname);
   show('intro');
@@ -419,17 +466,19 @@ el('#themeBtn').onclick=function(){
 /* ---------------- quiz --------------- */
 function render(){
   var q=Q[S.i], a=cur();
-  var ui = LANG==='hi' ? HI.ui : null;
-  var label = S.mode==='invite' ? (ui?ui.youAnswer:'Your answers')
-            : (S.who===0 ? (ui?ui.person1:'Person 1 answering') : (ui?ui.person2:'Person 2 answering'));
+  var str = LANG==='hi' ? HI.ui : null;
+  var label = S.mode==='invite' ? (str?str.youAnswer:'Your answers')
+            : (S.who===0 ? (str?str.person1:'Person 1 answering') : (str?str.person2:'Person 2 answering'));
   el('#whoTag').textContent = label;
   el('#prog').style.width = ((S.i)/Q.length*100)+'%';
-  el('#counter').textContent = ui
-    ? ui.question+' '+(S.i+1)+' / '+Q.length
+  el('#counter').textContent = str
+    ? str.question+' '+(S.i+1)+' / '+Q.length
     : 'Question '+(S.i+1)+' of '+Q.length;
-  el('#qcat').textContent = CATS[q.cat];
+  el('#qcat').innerHTML = CATS[q.cat] +
+    (q.tier==='advanced' ? '<span class="tierTag">'+ui('tierAdvanced','Going deeper')+'</span>' : '');
   el('#qtext').textContent = qText(q);
   var hp = qHelp(q);
+  if(q.type==='profile') hp = hp || ui('notScored','Shown to each other, not scored.');
   var h=el('#qhelp'); h.textContent=hp; h.hidden=!hp;
 
   el('#opts').innerHTML = qOpts(q).map(function(o,i){
@@ -441,10 +490,15 @@ function render(){
     b.onclick=function(){ a.picks[q.id]=parseInt(b.dataset.i,10); save(); render(); };
   });
 
+  var sk=el('#skipBtn');
+  sk.hidden = q.tier!=='advanced';
+  sk.textContent = ui('skip','Prefer not to answer this one');
+  sk.onclick=function(){ a.picks[q.id]=SKIPPED; save(); advance(); };
+
   var nnb=el('#nnBtn');
   nnb.hidden = !q.allowNN;
-  if(ui){ nnb.querySelector('b').textContent=ui.nonNegotiable;
-          nnb.querySelector('.muted').textContent=ui.nonNegotiableHelp; }
+  if(str){ nnb.querySelector('b').textContent=str.nonNegotiable;
+           nnb.querySelector('.muted').textContent=str.nonNegotiableHelp; }
   nnb.setAttribute('aria-pressed', String(a.nn.indexOf(q.id)>=0));
   nnb.onclick=function(){
     var k=a.nn.indexOf(q.id);
@@ -453,19 +507,55 @@ function render(){
   };
 
   el('#backBtn').style.visibility = S.i>0 ? 'visible':'hidden';
-  el('#backBtn').textContent = ui?ui.back:'Back';
+  el('#backBtn').textContent = str?str.back:'Back';
   var nx=el('#nextBtn');
   nx.disabled = a.picks[q.id]==null;
-  nx.textContent = S.i===Q.length-1 ? (ui?ui.finish:'Finish') : (ui?ui.next:'Next');
+  nx.textContent = S.i===Q.length-1 ? (str?str.finish:'Finish') : (str?str.next:'Next');
 }
 el('#backBtn').onclick=function(){ if(S.i>0){S.i--; save(); render();} };
-el('#nextBtn').onclick=function(){
+function advance(){
   if(S.i < Q.length-1){ S.i++; save(); render(); return; }
-  // finished one person's set
-  if(S.mode==='invite'){ save(); handoffInvite(); return; }
-  if(S.who===0 && !S.invited){ S.who=1; S.i=0; save(); handoffPass(); return; }
+  if(S.tier==='core'){ save(); tierGate(); return; }
+  finishSet();
+}
+function finishSet(){
+  // The sender of an invite gets a link to share. The person who OPENED an
+  // invite already has the other side's answers, so they go straight to the
+  // report: S.invited is what tells the two apart.
+  if(S.mode==='invite' && !S.invited){ save(); handoffInvite(); return; }
+  if(S.who===0 && !S.invited){
+    S.who=1; S.i=0; S.tier='core'; Q=activeQuestions(false); save(); handoffPass(); return;
+  }
   save(); showReport();
-};
+}
+el('#nextBtn').onclick=advance;
+
+/** Offered once the core set is done. Either person can decline, and a
+ *  declined section simply drops out of scoring for both. */
+function tierGate(){
+  var adv = activeQuestions(true).length - activeQuestions(false).length;
+  el('#gateBody').innerHTML =
+    '<h1>'+ui('advancedTitle','Go deeper?')+'</h1>'+
+    '<p class="muted">'+ui('advancedLead',
+      'A further '+adv+' questions on in-laws, money, anger, equality and health. The marriages that fail '+
+      'usually fail on these, not on the ones you have just answered. Optional, and you can skip any single question.')+'</p>'+
+    '<div class="gateCards">'+
+      '<button class="mode" type="button" id="gYes"><span class="n">+</span>'+
+        '<span><b>'+ui('advancedYes','Yes, continue')+'</b>'+
+        '<span class="muted small">'+(LANG==='hi'?'लगभग आठ मिनट और':'About eight more minutes')+'</span></span></button>'+
+      '<button class="mode" type="button" id="gNo"><span class="n">\u2192</span>'+
+        '<span><b>'+ui('advancedNo','No, show the report')+'</b>'+
+        '<span class="muted small">'+(LANG==='hi'?'मुख्य प्रश्नों के आधार पर':'Based on the core questions only')+'</span></span></button>'+
+    '</div>';
+  el('#gYes').onclick=function(){
+    S.tier='advanced'; cur().advanced=true;
+    Q=activeQuestions(true);
+    S.i=activeQuestions(false).length;
+    save(); show('quiz'); render();
+  };
+  el('#gNo').onclick=function(){ cur().advanced=false; save(); finishSet(); };
+  show('gate');
+}
 
 /* ---------------- handoff screens --------------- */
 function handoffPass(){
@@ -483,7 +573,7 @@ function handoffPass(){
   show('handoff');
 }
 function handoffInvite(){
-  var link = location.origin+location.pathname+'#invite='+encode(S.A);
+  var link = location.origin+location.pathname+'#invite='+encode(S.A)+'&g='+REGION+'&l='+LANG;
   el('#handoffBody').innerHTML =
     '<h1>Send this to them</h1>'+
     '<p class="muted">They answer the same questions on their own phone. When they finish, the report opens'+
@@ -508,6 +598,9 @@ function pct(n){ return Math.max(2,Math.min(100,n)); }
 function barColour(n){ return n>=75?'var(--leaf)':n>=50?'var(--turmeric)':'var(--warn)'; }
 
 function showReport(){
+  // Score against every question either of them reached, so a core-only set
+  // and an advanced set still compare on their common ground.
+  Q = activeQuestions(S.A.advanced!==false || S.B.advanced!==false);
   var r = compare(S.A, S.B);
   var C = 2*Math.PI*62;
   var p1 = S.invited ? 'They' : 'Person 1', p2 = S.invited ? 'You' : 'Person 2';
@@ -521,12 +614,34 @@ function showReport(){
         '<div class="mid"><b>'+r.score+'</b><span class="small muted">of 100</span></div></div>'+
       '<div style="flex:1;min-width:220px">'+
         '<span class="band '+r.band+'">'+r.verdict+'</span>'+
-        '<p class="muted" style="margin-top:10px">Based on '+r.answered+' questions you both answered'+
-        (r.dealbreakers.length? ', with '+r.dealbreakers.length+' non-negotiable'+(r.dealbreakers.length>1?'s':'')+' in conflict':'')+'.</p>'+
+        '<p class="muted" style="margin-top:10px">'+(LANG==='hi'
+          ? r.answered+' प्रश्नों के आधार पर जो आप दोनों ने भरे'+
+            (r.dealbreakers.length? ', '+r.dealbreakers.length+' में समझौता-रहित मतभेद':'')+'।'
+          : 'Based on '+r.answered+' questions you both answered'+
+            (r.dealbreakers.length? ', with '+r.dealbreakers.length+' non-negotiable'+
+             (r.dealbreakers.length>1?'s':'')+' in conflict':'')+'.')+'</p>'+
       '</div></div>';
 
+  if(r.flags.length){
+    html += '<section class="block"><h2>'+ui('flagsTitle','Read this part first')+'</h2>'+
+      r.flags.map(function(f){
+        return '<div class="flag'+(f.severity==='friction'?' friction':'')+'">'+
+          '<b>'+(f.severity==='safety'
+            ? (LANG==='hi'?'गंभीर':'Serious')
+            : (LANG==='hi'?'ध्यान दें':'Worth settling now'))+'</b>'+f.text+'</div>';
+      }).join('');
+    if(r.flags.some(function(f){return f.severity==='safety'})){
+      html += '<div class="helpline">'+(LANG==='hi'
+        ? 'अगर किसी रिश्ते में डर, अपमान या हिंसा है, तो वह निभाने की बात नहीं है। महिला हेल्पलाइन 181, आपातकाल 112।'
+        : 'If a relationship involves fear, humiliation or violence, that is not something to adjust to. '+
+          'Women\u2019s helpline 181, emergency 112.')+'</div>';
+    }
+    html += '</section>';
+  }
+
   if(r.dealbreakers.length){
-    html += '<div class="note" style="background:var(--warn-soft);color:var(--warn)"><b>Read this part first.</b> '+
+    html += '<div class="note" style="background:var(--warn-soft);color:var(--warn)"><b>'+
+      (LANG==='hi'?'यह भी ज़रूरी है।':'This part matters too.')+'</b> '+
       'A non-negotiable is not a preference to average out. Either someone changes their mind, honestly, or this '+
       'is where the match ends. Better to know now.</div>';
   }
@@ -540,21 +655,35 @@ function showReport(){
   }
 
   if(r.dealbreakers.length){
-    html += '<section class="block"><h2>Dealbreakers</h2>'+
+    html += '<section class="block"><h2>'+(LANG==='hi'?HI.ui.dealbreakers:'Dealbreakers')+'</h2>'+
       '<p class="muted small">Marked non-negotiable by one of you, and you disagree.</p>'+
       r.dealbreakers.map(function(l){return itemHTML(l,'bad')}).join('')+'</section>';
   }
   if(r.friction.length){
-    html += '<section class="block"><h2>Worth talking through</h2>'+
+    html += '<section class="block"><h2>'+(LANG==='hi'?HI.ui.friction:'Worth talking through')+'</h2>'+
       '<p class="muted small">Real differences, but nobody called them non-negotiable.</p>'+
       r.friction.slice(0,6).map(function(l){return itemHTML(l,'mid')}).join('')+'</section>';
   }
   if(r.agreements.length){
-    html += '<section class="block"><h2>Where you already agree</h2>'+
+    html += '<section class="block"><h2>'+(LANG==='hi'?HI.ui.agreements:'Where you already agree')+'</h2>'+
       r.agreements.slice(0,5).map(function(l){return itemHTML(l,'good')}).join('')+'</section>';
   }
 
-  html += '<section class="block"><h2>By area</h2>'+
+  if(r.profiles.length){
+    html += '<section class="block"><h2>'+ui('profilesTitle','About each other')+'</h2>'+
+      '<p class="muted small">'+(LANG==='hi'
+        ? 'इनका अंक नहीं लगता। अलग शौक़ होना असंगति नहीं है।'
+        : 'Not scored. Different interests are not an incompatibility.')+'</p>'+
+      r.profiles.map(function(l){ return itemHTML(l,'good'); }).join('')+'</section>';
+  }
+  if(r.skipped){
+    html += '<p class="muted small" style="margin-top:18px">'+
+      (LANG==='hi' ? r.skipped+' प्रश्न केवल एक ने भरे, इसलिए वे नहीं गिने गए।'
+                   : r.skipped+' question'+(r.skipped>1?'s were':' was')+
+                     ' answered by only one of you, so they were left out of the score.')+'</p>';
+  }
+
+  html += '<section class="block"><h2>'+(LANG==='hi'?HI.ui.byArea:'By area')+'</h2>'+
     r.byCategory.map(function(c){
       return '<div class="catrow"><span class="nm">'+CATS[c.cat]+'</span>'+
         '<span class="tr"><i style="width:'+pct(c.score)+'%;background:'+barColour(c.score)+'"></i></span>'+
@@ -563,7 +692,7 @@ function showReport(){
 
   var talk = r.dealbreakers.concat(r.friction).slice(0,5);
   if(talk.length){
-    html += '<section class="block"><h2>Five things to ask each other</h2><ol class="talk">'+
+    html += '<section class="block"><h2>'+(LANG==='hi'?HI.ui.talkAbout:'Five things to ask each other')+'</h2><ol class="talk">'+
       talk.map(function(l){return '<li>'+qText(l.q)+'</li>'}).join('')+'</ol></section>';
   }
 
@@ -576,7 +705,7 @@ function showReport(){
   el('#reportBody').innerHTML = html;
   el('#printRep').onclick=function(){ window.print(); };
   el('#shareRep').onclick=function(){
-    var l = location.origin+location.pathname+'#report='+encode(S.A)+'~'+encode(S.B);
+    var l = location.origin+location.pathname+'#report='+encode(S.A)+'~'+encode(S.B)+'&g='+REGION+'&l='+LANG;
     navigator.clipboard.writeText(l).then(function(){ toast('Report link copied'); },
       function(){ toast('Could not copy automatically'); });
   };
@@ -586,6 +715,14 @@ function showReport(){
 /* ---------------- entry: plain, invited, or shared report --------------- */
 (function start(){
   var h = location.hash.slice(1);
+  var amp = h.indexOf('&');
+  if(amp>=0){
+    var tail = new URLSearchParams(h.slice(amp+1));
+    if(tail.get('g')) REGION = tail.get('g');
+    if(tail.get('l')) LANG = tail.get('l');
+    h = h.slice(0, amp);
+  }
+  setLang(LANG); Q = activeQuestions(false); paintIntro();
   if(h.indexOf('report=')===0){
     var two = h.slice(7).split('~');
     var a=decode(two[0]||''), b=decode(two[1]||'');
@@ -594,7 +731,8 @@ function showReport(){
   if(h.indexOf('invite=')===0){
     var their = decode(h.slice(7));
     if(their){
-      S.A=their; S.B=blank(); S.who=1; S.i=0; S.mode='invite'; S.invited=true;
+      S.A=their; S.B=blank(); S.who=1; S.i=0; S.tier='core'; S.mode='invite'; S.invited=true;
+      Q=activeQuestions(false);
       el('#handoffBody').innerHTML =
         (LANG==='hi'
           ? '<h1>कोई जानना चाहता है कि क्या आप एक जैसा जीवन चाहते हैं</h1>'+
